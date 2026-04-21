@@ -31,13 +31,63 @@ A web application for managing knockout tournaments and round-robin leagues for 
 
 ### Knockout Tournaments
 
-- **Bracket generation:** Random draw, seeded only when odd-player promotion applies
+#### Advancement System
+
+- **Configurable per-game advancement:** The organizer configures how many players advance from each game in each round. For example, in a 20-game round 1 feeding into a 15-game round 2:
+  - Some games allow top 2 to advance (2nd place and up)
+  - Some games allow top 3 to advance (3rd place and up)
+  - The system distributes advancement slots across games to fill round 2 exactly
+- **Validation:** System blocks invalid configurations where total advancing players ≠ next round's available spots × 4
+- **Random or manual assignment:** Which games get 2-spot vs 3-spot advancement can be randomly assigned by the system or manually configured by organizer/admin
+
+#### Bracket Generation
+
+- **Random draw:** Initial bracket is random unless odd-player promotion applies
 - **Odd-player handling:** If player count % 4 != 0, top-performing players from the 1-2 most recent prior tournaments are promoted to fill spots. Promotion is automatic; table/board placement is random to avoid seeding
 - **Bracket editing:** Organizer or admin can manually adjust the bracket
-- **Table assignment:** Players are assigned to tables (numbered boards) for each round. System tells each player which game and table number to play
+
+#### Table & Seat Assignment
+
+- **Tables:** Each game is assigned a table number (e.g., Table 1, Table 2). The system tells each player which game and table number to play
+- **Colors:** Players are assigned a seat color (yellow, green, blue, red) when assigned to a game
+- **Yellow seat — first-come, first-served:** When 1st place finishers from round N are seated in round N+1, the yellow seat goes to the player who finished 1st earliest. Remaining 1st place finishers are seated in order of their finish time
+- **No immediate rematches:** Players advancing from the same game in round N cannot be seated at the same table in round N+1. They must be distributed across different games
+- **Distribution algorithm:** Players from each source game are spread across destination tables such that no table contains two players from the same source game
+
+#### Round Progression
+
+- **Partial completion allowed:** A game in round N+1 can start before all games in round N are finished — as long as all 4 spots in that specific game N+1 are filled
+- **Dependency tracking:** The system tracks which players advanced from which games to enforce no-rematches and correct seat assignments
+
+#### Result Reporting
+
+- **Who can report:** Any player at the table can report the game result
+- **Default reporter:** The lowest-placed advancing player reports (commonly 2nd place, since 1st often leaves immediately after winning)
+- **Override:** Organizer or admin can override and report any game
+- **Edit lock rule:** Editing game N is blocked if any game in round N+1 or beyond has already been played. The chain of advancement creates a dependency graph — changing who advanced invalidates later rounds
 - **Forfeit handling:** Missing player results in game played with one less participant
-- **Live status:** Organizer can set tournament to `live`; results reported by winner, second-place, or organizer
-- **Result reporting:** Any member who is organizing can report any game. Guests can report their own table's result
+
+#### Tournament Settings (JSON)
+```json
+{
+  "tables_count": 20,
+  "advancement": {
+    "round_1": {
+      "games": 20,
+      "advancement_per_game": [
+        {"game_ids": [1,4,7...], "placements": [1, 2]},
+        {"game_ids": [2,5,8...], "placements": [1, 2, 3]}
+      ]
+    }
+  },
+  "default_reporter": "lowest_advancing"
+}
+```
+
+#### Live Status
+
+- Organizer can set tournament to `live` when ready to begin
+- Results reported by players or organizer as games complete
 
 ### Round-Robin Leagues
 
@@ -91,7 +141,7 @@ created_at, modified_at, modified_by, deleted_at
 ```
 id, name, type (knockout), organizer_id,
 status (draft/live/completed),
-settings (json: {tables_count, ...}),
+settings (json: {tables_count, advancement_config, default_reporter, ...}),
 created_at, modified_at, modified_by, deleted_at
 ```
 
@@ -105,7 +155,9 @@ created_at, modified_at, modified_by, deleted_at
 
 **KnockoutBracket**
 ```
-id, tournament_id, rounds (json: [[{player_id, table}]]),
+id, tournament_id,
+rounds (json: {round_n: [{game_id, player_ids, status}]}),
+advancement_config (json: per-round advancement rules),
 created_at, modified_at, modified_by, deleted_at
 ```
 
@@ -119,13 +171,17 @@ created_at, modified_at, modified_by, deleted_at
 ```
 id, tournament_id/league_id, round, table_number,
 status (pending/completed), placement_points (json),
+completed_at (timestamp — for ordering 1st-place finishes),
 created_at, modified_at, modified_by, deleted_at
 ```
 
 **MatchAssignment**
 ```
-id, match_id, player_id, seat_position,
-result (1st/2nd/3rd/4th), reported_by (user_id),
+id, match_id, player_id,
+seat_color (yellow/green/blue/red),
+result (1st/2nd/3rd/4th),
+source_game_id (tracks which game player advanced from),
+reported_by (user_id),
 created_at, modified_at, modified_by, deleted_at
 ```
 
@@ -290,7 +346,7 @@ backend/
 │   └── application/
 │       ├── tournament.go     # bracket generation, seeding logic
 │       ├── league.go        # round-robin scheduling, fairness tracking
-│       ├── pairing.go       # table assignment
+│       ├── pairing.go       # table assignment, color seating, no-rematch enforcement
 │       ├── auth.go
 │       └── dto/             # request/response objects
 
@@ -355,8 +411,12 @@ backend/
 **Unit tests (core/application/):**
 - Bracket generation correctness
 - Odd-player promotion logic
-- League pairing algorithm (fairness constraints)
-- Table assignment logic
+- Advancement configuration validation (blocked if spots don't match)
+- Round-robin pairing algorithm (fairness constraints)
+- Table assignment with no-rematch constraint
+- Yellow seat assignment (first-come, first-served by 1st-place finish time)
+- Partial round completion (game starts when spots filled)
+- Game edit lock (blocked if downstream games played)
 - Scoring calculations
 - Tiebreaker detection
 
