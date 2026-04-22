@@ -6,7 +6,7 @@
 
 **Repository:** https://github.com/Tamaiw/LudoTournamentManager
 **Main branch:** main
-**Status:** Implementation not yet started — in planning phase
+**Status:** Implementation in progress — Tasks 1-5 complete, starting Task 6
 
 ## Architecture
 
@@ -62,11 +62,11 @@ Each task has its own worktree directory with an isolated branch:
 
 ## Pending Tasks (in order)
 
-- [ ] Task 1: Initialize Go backend structure (domain models, errors, events)
-- [ ] Task 2: Define ports (interfaces) for hexagonal architecture
-- [ ] Task 3: Tournament bracket generation & advancement logic (TDD)
-- [ ] Task 4: Table assignment & no-rematch logic (TDD)
-- [ ] Task 5: League round-robin & fairness-aware pairing (TDD)
+- [x] Task 1: Initialize Go backend structure (domain models, errors, events)
+- [x] Task 2: Define ports (interfaces) for hexagonal architecture
+- [x] Task 3: Tournament bracket generation & advancement logic (TDD)
+- [x] Task 4: Table assignment & no-rematch logic (TDD)
+- [x] Task 5: League round-robin & fairness-aware pairing (TDD)
 - [ ] Task 6: GORM persistence layer
 - [ ] Task 7: HTTP handlers & Gin router
 - [ ] Task 8: React + Vite + Tailwind frontend scaffolding
