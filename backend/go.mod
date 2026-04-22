@@ -1,1 +1,3 @@
-/home/tamas/src/LudoTournamentManagementSystem/.worktrees/task-1-scaffold/backend/go.mod
+module ludo-tournament
+
+go 1.21
