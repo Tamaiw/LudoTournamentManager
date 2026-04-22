@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"time"
@@ -16,16 +17,16 @@ import (
 type TournamentService struct {
 	tournamentRepo outbound.TournamentRepository
 	matchRepo      outbound.MatchRepository
-	playerRepo     outbound.PlayerRepository
+	assignmentRepo outbound.MatchAssignmentRepository
 	uuidCounter    int
 }
 
 // NewTournamentService creates a new TournamentService
-func NewTournamentService(tournamentRepo outbound.TournamentRepository, matchRepo outbound.MatchRepository, playerRepo outbound.PlayerRepository) *TournamentService {
+func NewTournamentService(tournamentRepo outbound.TournamentRepository, matchRepo outbound.MatchRepository, assignmentRepo outbound.MatchAssignmentRepository) *TournamentService {
 	return &TournamentService{
 		tournamentRepo: tournamentRepo,
 		matchRepo:      matchRepo,
-		playerRepo:     playerRepo,
+		assignmentRepo: assignmentRepo,
 		uuidCounter:    0,
 	}
 }
@@ -97,7 +98,10 @@ func (s *TournamentService) GenerateBracket(ctx context.Context, tournamentID st
 	// Calculate number of games (groups of 4)
 	numGames := len(playerIDs) / 4
 
+	seatColors := []models.SeatColor{models.SeatYellow, models.SeatGreen, models.SeatBlue, models.SeatRed}
+
 	// Create matches for round 1 - each match gets 4 players
+	matches := make([]*models.Match, numGames)
 	for i := 0; i < numGames; i++ {
 		match := &models.Match{
 			ID:           s.generateUUID(),
@@ -108,6 +112,24 @@ func (s *TournamentService) GenerateBracket(ctx context.Context, tournamentID st
 		}
 		if err := s.matchRepo.Create(ctx, match); err != nil {
 			return err
+		}
+		matches[i] = match
+	}
+
+	// Assign players to matches round-robin
+	playerIndex := 0
+	for _, match := range matches {
+		for seatNum := 0; seatNum < 4 && playerIndex < len(shuffled); seatNum++ {
+			assignment := &models.MatchAssignment{
+				ID:        s.generateUUID(),
+				MatchID:   match.ID,
+				PlayerID:  shuffled[playerIndex],
+				SeatColor: seatColors[seatNum],
+			}
+			if err := s.assignmentRepo.Create(ctx, assignment); err != nil {
+				return err
+			}
+			playerIndex++
 		}
 	}
 
@@ -123,13 +145,16 @@ func (s *TournamentService) GetBracket(ctx context.Context, tournamentID string)
 		return nil, err
 	}
 
+	roundsJSON, err := buildRoundsJSON(ctx, matches, s.assignmentRepo)
+	if err != nil {
+		return nil, err
+	}
+
 	bracket := &models.KnockoutBracket{
 		ID:           s.generateUUID(),
 		TournamentID: tournamentID,
+		Rounds:       roundsJSON,
 	}
-
-	// Build rounds structure from matches
-	_ = matches // Currently returning empty structure
 
 	return bracket, nil
 }
@@ -152,16 +177,25 @@ func (s *TournamentService) ReportMatch(ctx context.Context, matchID string, res
 		return domain.ErrGameAlreadyPlayed
 	}
 
+	// Update match assignments with results
+	for _, result := range results {
+		placement := result.Placement // Create a copy for pointer stability
+		assignment, err := s.assignmentRepo.GetByMatchAndPlayer(ctx, matchID, result.PlayerID)
+		if err != nil {
+			return err
+		}
+		assignment.Result = &placement
+		assignment.SeatColor = result.SeatColor
+		assignment.ReportedBy = &reportedBy
+		if err := s.assignmentRepo.Update(ctx, assignment); err != nil {
+			return err
+		}
+	}
+
 	// Update match status to completed
 	now := time.Now()
 	match.Status = models.MatchStatusCompleted
 	match.CompletedAt = &now
-
-	// Update match assignments with results
-	for _, result := range results {
-		_ = result // In real implementation, would update MatchAssignment records
-		_ = reportedBy
-	}
 
 	return s.matchRepo.Update(ctx, match)
 }
@@ -251,6 +285,58 @@ func shuffleStrings(arr []string) {
 		j := rand.Intn(i + 1)
 		arr[i], arr[j] = arr[j], arr[i]
 	}
+}
+
+// buildRoundsJSON builds the JSON string for bracket rounds from matches
+func buildRoundsJSON(ctx context.Context, matches []models.Match, assignmentRepo outbound.MatchAssignmentRepository) (string, error) {
+	// Group matches by round
+	roundsMap := make(map[int][]models.Match)
+	for _, match := range matches {
+		roundsMap[match.Round] = append(roundsMap[match.Round], match)
+	}
+
+	// Build the structure
+	type matchEntry struct {
+		GameID      string             `json:"game_id"`
+		PlayerIDs   []string           `json:"player_ids"`
+		Status      models.MatchStatus `json:"status"`
+		TableNumber int                `json:"table_number"`
+	}
+
+	type roundEntry struct {
+		Matches []matchEntry `json:"matches"`
+	}
+
+	result := make(map[string]roundEntry)
+	for round, roundMatches := range roundsMap {
+		entries := make([]matchEntry, len(roundMatches))
+		for i, match := range roundMatches {
+			// Get player assignments for this match
+			assignments, err := assignmentRepo.ListByMatch(ctx, match.ID)
+			if err != nil {
+				return "", err
+			}
+			playerIDs := make([]string, len(assignments))
+			for j, a := range assignments {
+				playerIDs[j] = a.PlayerID
+			}
+			entries[i] = matchEntry{
+				GameID:      match.ID,
+				PlayerIDs:   playerIDs,
+				Status:      match.Status,
+				TableNumber: match.TableNumber,
+			}
+		}
+		result[fmt.Sprintf("round_%d", round)] = roundEntry{Matches: entries}
+	}
+
+	// Marshal to JSON
+	roundsJSON, err := json.Marshal(result)
+	if err != nil {
+		return "", err
+	}
+
+	return string(roundsJSON), nil
 }
 
 // generateUUID is a placeholder - in real implementation use uuid package

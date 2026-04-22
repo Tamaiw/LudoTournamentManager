@@ -129,6 +129,52 @@ func (m *mockMatchRepository) GetCompletedCountInRound(ctx context.Context, tour
 	return count, nil
 }
 
+type mockMatchAssignmentRepository struct {
+	assignments map[string]*models.MatchAssignment
+}
+
+func (m *mockMatchAssignmentRepository) Create(ctx context.Context, assignment *models.MatchAssignment) error {
+	if m.assignments == nil {
+		m.assignments = make(map[string]*models.MatchAssignment)
+	}
+	assignment.CreatedAt = time.Now()
+	assignment.ModifiedAt = time.Now()
+	m.assignments[assignment.ID] = assignment
+	return nil
+}
+
+func (m *mockMatchAssignmentRepository) GetByID(ctx context.Context, id string) (*models.MatchAssignment, error) {
+	if a, ok := m.assignments[id]; ok {
+		return a, nil
+	}
+	return nil, domain.ErrNotFound
+}
+
+func (m *mockMatchAssignmentRepository) Update(ctx context.Context, assignment *models.MatchAssignment) error {
+	assignment.ModifiedAt = time.Now()
+	m.assignments[assignment.ID] = assignment
+	return nil
+}
+
+func (m *mockMatchAssignmentRepository) GetByMatchAndPlayer(ctx context.Context, matchID, playerID string) (*models.MatchAssignment, error) {
+	for _, a := range m.assignments {
+		if a.MatchID == matchID && a.PlayerID == playerID {
+			return a, nil
+		}
+	}
+	return nil, domain.ErrNotFound
+}
+
+func (m *mockMatchAssignmentRepository) ListByMatch(ctx context.Context, matchID string) ([]models.MatchAssignment, error) {
+	var result []models.MatchAssignment
+	for _, a := range m.assignments {
+		if a.MatchID == matchID {
+			result = append(result, *a)
+		}
+	}
+	return result, nil
+}
+
 // Tests
 
 func TestGenerateBracket_SplitsPlayersIntoGamesOfFour(t *testing.T) {
@@ -144,7 +190,7 @@ func TestGenerateBracket_SplitsPlayersIntoGamesOfFour(t *testing.T) {
 	}
 	_ = tournamentRepo.Create(context.Background(), tournament)
 
-	svc := NewTournamentService(tournamentRepo, matchRepo, nil)
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
 
 	// When: GenerateBracket
 	err := svc.GenerateBracket(context.Background(), "tournament-1", playerIDs)
@@ -179,7 +225,7 @@ func TestGenerateBracket_RejectsInvalidPlayerCount(t *testing.T) {
 	}
 	_ = tournamentRepo.Create(context.Background(), tournament)
 
-	svc := NewTournamentService(tournamentRepo, matchRepo, nil)
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
 
 	// When: GenerateBracket with odd player count
 	err := svc.GenerateBracket(context.Background(), "tournament-1", playerIDs)
@@ -262,7 +308,7 @@ func TestCanEditGame_ReturnsTrueWhenNoDownstreamGames(t *testing.T) {
 	}
 	_ = matchRepo.Create(context.Background(), match1)
 
-	svc := NewTournamentService(tournamentRepo, matchRepo, nil)
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
 
 	// When: CanEditGame for match-1
 	canEdit, err := svc.CanEditGame(context.Background(), "match-1")
@@ -310,7 +356,7 @@ func TestCanEditGame_ReturnsFalseWhenDownstreamGamesPlayed(t *testing.T) {
 	}
 	_ = matchRepo.Create(context.Background(), match2)
 
-	svc := NewTournamentService(tournamentRepo, matchRepo, nil)
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
 
 	// When: CanEditGame for match-1
 	canEdit, err := svc.CanEditGame(context.Background(), "match-1")
@@ -328,6 +374,7 @@ func TestReportMatch_RecordsResults(t *testing.T) {
 	// Given: A match with 4 players assigned
 	tournamentRepo := &mockTournamentRepository{tournaments: make(map[string]*models.Tournament)}
 	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	assignmentRepo := &mockMatchAssignmentRepository{assignments: make(map[string]*models.MatchAssignment)}
 
 	// Create tournament
 	tournament := &models.Tournament{
@@ -346,7 +393,20 @@ func TestReportMatch_RecordsResults(t *testing.T) {
 	}
 	_ = matchRepo.Create(context.Background(), match)
 
-	svc := NewTournamentService(tournamentRepo, matchRepo, nil)
+	// Create match assignments for the 4 players
+	seatColors := []models.SeatColor{models.SeatYellow, models.SeatGreen, models.SeatBlue, models.SeatRed}
+	players := []string{"p1", "p2", "p3", "p4"}
+	for i, playerID := range players {
+		assignment := &models.MatchAssignment{
+			ID:        playerID + "-assignment",
+			MatchID:   "match-1",
+			PlayerID:  playerID,
+			SeatColor: seatColors[i],
+		}
+		_ = assignmentRepo.Create(context.Background(), assignment)
+	}
+
+	svc := NewTournamentService(tournamentRepo, matchRepo, assignmentRepo)
 
 	// When: ReportMatch with results
 	results := []inbound.MatchResult{
@@ -370,6 +430,16 @@ func TestReportMatch_RecordsResults(t *testing.T) {
 	if updatedMatch.CompletedAt == nil {
 		t.Error("expected CompletedAt to be set")
 	}
+
+	// Verify assignments were updated with results
+	for _, result := range results {
+		assignment, _ := assignmentRepo.GetByMatchAndPlayer(context.Background(), "match-1", result.PlayerID)
+		if assignment.Result == nil {
+			t.Errorf("expected assignment for player %s to have result set", result.PlayerID)
+		} else if *assignment.Result != result.Placement {
+			t.Errorf("expected placement %d for player %s, got %d", result.Placement, result.PlayerID, *assignment.Result)
+		}
+	}
 }
 
 func TestReportMatch_ValidatesResultsCount(t *testing.T) {
@@ -387,7 +457,7 @@ func TestReportMatch_ValidatesResultsCount(t *testing.T) {
 	}
 	_ = matchRepo.Create(context.Background(), match)
 
-	svc := NewTournamentService(tournamentRepo, matchRepo, nil)
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
 
 	// When: ReportMatch with only 2 results (invalid)
 	results := []inbound.MatchResult{
