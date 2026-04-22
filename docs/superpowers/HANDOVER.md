@@ -1,12 +1,58 @@
 # Ludo Tournament Management System — Status
 
-> This document is updated periodically as tasks complete. It serves as a handover checkpoint if context runs low.
+> This document is the **master handoff file**. All implementation state is here.
+> Last session ended with all 10 tasks complete. Context was near full.
+
+## Quick Resume Instructions
+
+To resume work on this project:
+
+1. **Read this file** (`docs/superpowers/HANDOVER.md`) first
+2. **Read the design spec** (`docs/superpowers/specs/2026-04-21-ludo-tournament-management-system-design.md`)
+3. **Read the implementation plan** (`docs/superpowers/plans/2026-04-21-ludo-tournament-management-system.md`)
+4. **Check git status** for current state of each worktree branch
+
+## Current State
+
+**All 10 tasks are implemented in isolated worktrees:**
+```
+.worktrees/task-1-scaffold   → branch: task-1-scaffold
+.worktrees/task-2-ports      → branch: task-2-ports
+.worktrees/task-3-tournament → branch: task-3-tournament
+.worktrees/task-4-pairing    → branch: task-4-pairing
+.worktrees/task-5-league     → branch: task-5-league
+.worktrees/task-6-persistence → branch: task-6-persistence
+.worktrees/task-7-http       → branch: task-7-http
+.worktrees/task-8-frontend   → branch: task-8-frontend
+.worktrees/task-9-components → branch: task-9-components
+.worktrees/task-10-docker    → branch: task-10-docker
+```
+
+**Main branch** has design spec, plan, and HANDOVER only — not the implementation code.
+
+## Next Step: Merge Worktrees
+
+Each worktree branch needs to be merged into main. Suggested merge order (dependencies):
+
+1. task-1-scaffold (foundation)
+2. task-2-ports (interfaces depend on models)
+3. task-3-tournament, task-4-pairing, task-5-league (can merge in any order)
+4. task-6-persistence (depends on ports)
+5. task-7-http (depends on ports)
+6. task-8-frontend (depends on types)
+7. task-9-components (depends on frontend scaffolding)
+8. task-10-docker (independent)
+
+Merge command per branch:
+```bash
+git merge --no-ff worktrees/task-N-branch
+```
 
 ## Project Overview
 
 **Repository:** https://github.com/Tamaiw/LudoTournamentManager
 **Main branch:** main
-**Status:** Implementation complete — All 10 tasks finished
+**Status:** Implementation complete — needs worktree merge
 
 ## All Tasks Complete
 
