@@ -1,19 +1,23 @@
 package outbound
 
-import "ludo-tournament/core/domain/models"
+import (
+	"context"
+
+	"ludo-tournament/core/domain/models"
+)
 
 type InvitationRepository interface {
-	Create(invitation *models.Invitation) error
-	GetByID(id string) (*models.Invitation, error)
-	Update(invitation *models.Invitation) error
-	ListByTournament(tournamentID string) ([]models.Invitation, error)
-	ListByLeague(leagueID string) ([]models.Invitation, error)
-	ListByInvitee(inviteeID string) ([]models.Invitation, error)
+	Create(ctx context.Context, invitation *models.Invitation) error
+	GetByID(ctx context.Context, id string) (*models.Invitation, error)
+	Update(ctx context.Context, invitation *models.Invitation) error
+	ListByTournament(ctx context.Context, tournamentID string) ([]models.Invitation, error)
+	ListByLeague(ctx context.Context, leagueID string) ([]models.Invitation, error)
+	ListByInvitee(ctx context.Context, inviteeID string) ([]models.Invitation, error)
 }
 
 type UserInviteRepository interface {
-	Create(invite *models.UserInvite) error
-	GetByCode(code string) (*models.UserInvite, error)
-	GetByEmail(email string) (*models.UserInvite, error)
-	Update(invite *models.UserInvite) error
+	Create(ctx context.Context, invite *models.UserInvite) error
+	GetByCode(ctx context.Context, code string) (*models.UserInvite, error)
+	GetByEmail(ctx context.Context, email string) (*models.UserInvite, error)
+	Update(ctx context.Context, invite *models.UserInvite) error
 }

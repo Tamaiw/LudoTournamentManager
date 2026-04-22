@@ -1,13 +1,17 @@
 package outbound
 
-import "ludo-tournament/core/domain/models"
+import (
+	"context"
+
+	"ludo-tournament/core/domain/models"
+)
 
 type MatchRepository interface {
-	Create(match *models.Match) error
-	GetByID(id string) (*models.Match, error)
-	Update(match *models.Match) error
-	ListByTournament(tournamentID string) ([]models.Match, error)
-	ListByLeague(leagueID string) ([]models.Match, error)
-	ListByRound(tournamentID string, round int) ([]models.Match, error)
-	GetCompletedCountInRound(tournamentID string, round int) (int, error)
+	Create(ctx context.Context, match *models.Match) error
+	GetByID(ctx context.Context, id string) (*models.Match, error)
+	Update(ctx context.Context, match *models.Match) error
+	ListByTournament(ctx context.Context, tournamentID string) ([]models.Match, error)
+	ListByLeague(ctx context.Context, leagueID string) ([]models.Match, error)
+	ListByRound(ctx context.Context, tournamentID string, round int) ([]models.Match, error)
+	GetCompletedCountInRound(ctx context.Context, tournamentID string, round int) (int, error)
 }

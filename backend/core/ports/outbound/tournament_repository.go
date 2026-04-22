@@ -1,12 +1,16 @@
 package outbound
 
-import "ludo-tournament/core/domain/models"
+import (
+	"context"
+
+	"ludo-tournament/core/domain/models"
+)
 
 type TournamentRepository interface {
-	Create(tournament *models.Tournament) error
-	GetByID(id string) (*models.Tournament, error)
-	Update(tournament *models.Tournament) error
-	SoftDelete(id string) error
-	List() ([]models.Tournament, error)
-	ListByStatus(status models.TournamentStatus) ([]models.Tournament, error)
+	Create(ctx context.Context, tournament *models.Tournament) error
+	GetByID(ctx context.Context, id string) (*models.Tournament, error)
+	Update(ctx context.Context, tournament *models.Tournament) error
+	SoftDelete(ctx context.Context, id string) error
+	List(ctx context.Context) ([]models.Tournament, error)
+	ListByStatus(ctx context.Context, status models.TournamentStatus) ([]models.Tournament, error)
 }

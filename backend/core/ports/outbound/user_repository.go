@@ -1,13 +1,17 @@
 package outbound
 
-import "ludo-tournament/core/domain/models"
+import (
+	"context"
+
+	"ludo-tournament/core/domain/models"
+)
 
 type UserRepository interface {
-	Create(user *models.User) error
-	GetByID(id string) (*models.User, error)
-	GetByEmail(email string) (*models.User, error)
-	Update(user *models.User) error
-	SoftDelete(id string) error
-	List() ([]models.User, error)
-	UpdateLastActive(id string) error
+	Create(ctx context.Context, user *models.User) error
+	GetByID(ctx context.Context, id string) (*models.User, error)
+	GetByEmail(ctx context.Context, email string) (*models.User, error)
+	Update(ctx context.Context, user *models.User) error
+	SoftDelete(ctx context.Context, id string) error
+	List(ctx context.Context) ([]models.User, error)
+	UpdateLastActive(ctx context.Context, id string) error
 }
