@@ -68,7 +68,7 @@ A web application for managing knockout tournaments and round-robin leagues for 
 **1. Start PostgreSQL and backend:**
 
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres
 cd backend && go run cmd/server/main.go
 ```
 
@@ -86,7 +86,7 @@ cd frontend && npm install && npm run dev
 ### Docker Compose (Full Stack)
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 This starts PostgreSQL, backend (port 8080), and frontend (port 80).
