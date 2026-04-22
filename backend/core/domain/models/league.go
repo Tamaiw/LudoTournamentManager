@@ -32,14 +32,3 @@ type League struct {
 	ModifiedBy  *string        `gorm:"type:uuid" json:"modified_by,omitempty"`
 	DeletedAt   *time.Time     `gorm:"index" json:"deleted_at,omitempty"`
 }
-
-type Pair struct {
-	Player1 string `json:"player1"`
-	Player2 string `json:"player2"`
-}
-
-type LeagueMatchResult struct {
-	MatchID   string `json:"matchId"`
-	PlayerID  string `json:"playerId"`
-	Placement int    `json:"placement"` // 1, 2, 3, or 4
-}
