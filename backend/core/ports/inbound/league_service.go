@@ -32,3 +32,8 @@ type PlayerStanding struct {
 	Wins        int     `json:"wins"`
 	Rank        int     `json:"rank"`
 }
+
+type MatchResult struct {
+	PlayerID  string `json:"playerId"`
+	Placement int    `json:"placement"` // 1, 2, 3, or 4
+}
