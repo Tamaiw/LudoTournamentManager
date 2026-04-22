@@ -46,10 +46,10 @@ func CreateLeagueHandler(svc inbound.LeagueService) gin.HandlerFunc {
 // ListLeaguesHandler handles listing leagues
 func ListLeaguesHandler(svc inbound.LeagueService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO: Add filtering by status query param when service supports it
-		c.JSON(http.StatusOK, gin.H{
-			"leagues": []models.League{},
-		})
+		c.JSON(501, gin.H{"error": gin.H{
+			"code":    "NOT_IMPLEMENTED",
+			"message": "List leagues not yet implemented",
+		}})
 	}
 }
 

@@ -2,11 +2,23 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
+var initOnce = func() {
+	if len(jwtSecret) == 0 {
+		jwtSecret = []byte("fallback-secret-for-dev-only")
+	}
+}
+
+func init() {
+	initOnce()
+}
 
 const (
 	UserIDKey   = "user_id"
@@ -64,8 +76,7 @@ func extractToken(c *gin.Context) string {
 // validateJWT validates a JWT token and returns the user ID and role
 func validateJWT(tokenString string) (string, string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// TODO: Load secret from config/env
-		return []byte("your-secret-key"), nil
+		return jwtSecret, nil
 	})
 
 	if err != nil || !token.Valid {

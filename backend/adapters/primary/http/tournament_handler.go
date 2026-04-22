@@ -47,10 +47,10 @@ func CreateTournamentHandler(svc inbound.TournamentService) gin.HandlerFunc {
 // ListTournamentsHandler handles listing tournaments
 func ListTournamentsHandler(svc inbound.TournamentService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO: Add filtering by status query param when service supports it
-		c.JSON(http.StatusOK, gin.H{
-			"tournaments": []models.Tournament{},
-		})
+		c.JSON(501, gin.H{"error": gin.H{
+			"code":    "NOT_IMPLEMENTED",
+			"message": "List tournaments not yet implemented",
+		}})
 	}
 }
 
@@ -156,10 +156,10 @@ func DeleteTournamentHandler(svc inbound.TournamentService) gin.HandlerFunc {
 // ListTournamentMatchesHandler handles listing matches for a tournament
 func ListTournamentMatchesHandler(svc inbound.TournamentService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO: Implement when match listing is added to service
-		c.JSON(http.StatusOK, gin.H{
-			"matches": []models.Match{},
-		})
+		c.JSON(501, gin.H{"error": gin.H{
+			"code":    "NOT_IMPLEMENTED",
+			"message": "List tournament matches not yet implemented",
+		}})
 	}
 }
 
@@ -234,13 +234,4 @@ func GetPairingsHandler(svc inbound.TournamentService) gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{"pairings": pairings})
 	}
-}
-
-// extractUserID extracts the user ID from the Gin context
-func extractUserID(c *gin.Context) string {
-	userID, _ := c.Get(middleware.UserIDKey)
-	if id, ok := userID.(string); ok {
-		return id
-	}
-	return ""
 }
