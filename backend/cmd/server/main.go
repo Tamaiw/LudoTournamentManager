@@ -43,6 +43,11 @@ func main() {
 	authService := NewAuthService(userRepo)
 	userService := NewUserService(userRepo)
 
+	// Seed admin user if needed
+	if err := seedAdminIfNeeded(ctx, userRepo); err != nil {
+		log.Fatalf("Failed to seed admin user: %v", err)
+	}
+
 	// Setup router
 	router := ludohttp.SetupRouter(
 		tournamentService,
@@ -245,4 +250,45 @@ func (s *UserService) SendInvite(ctx context.Context, email string, inviterID st
 func (s *UserService) AcceptInvite(ctx context.Context, code string, email string, password string) (string, error) {
 	// TODO: Implement with UserInviteRepository
 	return "", nil
+}
+
+// seedAdminIfNeeded creates an initial admin user if no users exist
+func seedAdminIfNeeded(ctx context.Context, userRepo *persistence.GormUserRepository) error {
+	users, err := userRepo.List(ctx)
+	if err != nil {
+		return err
+	}
+
+	if len(users) == 0 {
+		// No users exist — create initial admin
+		adminEmail := os.Getenv("ADMIN_EMAIL")
+		adminPassword := os.Getenv("ADMIN_PASSWORD")
+
+		if adminEmail == "" {
+			adminEmail = "admin@ludo.local"
+		}
+		if adminPassword == "" {
+			adminPassword = "changeme-in-production"
+		}
+
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(adminPassword), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+
+		admin := &models.User{
+			Email:        adminEmail,
+			PasswordHash: string(hashedPassword),
+			Role:         models.RoleAdmin,
+		}
+
+		if err := userRepo.Create(ctx, admin); err != nil {
+			return err
+		}
+
+		log.Printf("Created initial admin user: %s (password: %s)", adminEmail, adminPassword)
+		log.Printf("WARNING: Change this password immediately in production!")
+	}
+
+	return nil
 }
