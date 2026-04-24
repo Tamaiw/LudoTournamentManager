@@ -1,5 +1,11 @@
 package http
 
+// @title Ludo Tournament Management API
+// @version 1.0
+// @description API for managing Ludo tournaments and leagues
+// @host localhost:8080
+// @BasePath /
+
 import (
 	_ "ludo-tournament/docs" // swagger docs
 	"ludo-tournament/adapters/primary/http/middleware"

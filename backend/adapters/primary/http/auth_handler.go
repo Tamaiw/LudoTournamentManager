@@ -1,11 +1,5 @@
 package http
 
-// @title Ludo Tournament Management API
-// @version 1.0
-// @description API for managing Ludo tournaments and leagues
-// @host localhost:8080
-// @BasePath /
-
 import (
 	"net/http"
 
@@ -16,16 +10,17 @@ import (
 )
 
 // RegisterHandler handles user registration
-// @Summary Register a new user
-// @Description Creates a new user account with email, password, and invite code
-// @Tags auth
-// @Accept json
-// @Produce json
-// @Param request body registerRequest true "Registration details"
-// @Success 201 {object} map[string]string "token"
-// @Failure 400 {object} errorResponse
-// @Failure 500 {object} errorResponse
-// @Router /auth/register [post]
+//
+//	@Summary		Register a new user
+//	@Description	Creates a new user account with email, password, and invite code
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		registerRequest		true	"Registration details"
+//	@Success		201		{object}	map[string]string	"token"
+//	@Failure		400		{object}	errorResponse
+//	@Failure		500		{object}	errorResponse
+//	@Router			/auth/register [post]
 func RegisterHandler(svc inbound.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
@@ -60,16 +55,17 @@ func RegisterHandler(svc inbound.AuthService) gin.HandlerFunc {
 }
 
 // LoginHandler handles user login
-// @Summary Login user
-// @Description Authenticates user with email and password, returns JWT token
-// @Tags auth
-// @Accept json
-// @Produce json
-// @Param request body loginRequest true "Login credentials"
-// @Success 200 {object} map[string]string "token"
-// @Failure 400 {object} errorResponse
-// @Failure 401 {object} errorResponse
-// @Router /auth/login [post]
+//
+//	@Summary		Login user
+//	@Description	Authenticates user with email and password, returns JWT token
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		loginRequest		true	"Login credentials"
+//	@Success		200		{object}	map[string]string	"token"
+//	@Failure		400		{object}	errorResponse
+//	@Failure		401		{object}	errorResponse
+//	@Router			/auth/login [post]
 func LoginHandler(svc inbound.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
@@ -103,15 +99,16 @@ func LoginHandler(svc inbound.AuthService) gin.HandlerFunc {
 }
 
 // LogoutHandler handles user logout
-// @Summary Logout user
-// @Description Invalidates the current session (client should discard token)
-// @Tags auth
-// @Produce json
-// @Security BearerAuth
-// @Param Authorization header string true "Bearer token"
-// @Success 200 {object} map[string]string "message"
-// @Failure 400 {object} errorResponse
-// @Router /auth/logout [post]
+//
+//	@Summary		Logout user
+//	@Description	Invalidates the current session (client should discard token)
+//	@Tags			auth
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			Authorization	header		string				true	"Bearer token"
+//	@Success		200				{object}	map[string]string	"message"
+//	@Failure		400				{object}	errorResponse
+//	@Router			/auth/logout [post]
 func LogoutHandler(svc inbound.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := middleware.ExtractToken(c)
@@ -140,15 +137,16 @@ func LogoutHandler(svc inbound.AuthService) gin.HandlerFunc {
 }
 
 // MeHandler returns the current authenticated user
-// @Summary Get current user
-// @Description Returns the authenticated user's profile
-// @Tags auth
-// @Produce json
-// @Security BearerAuth
-// @Param Authorization header string true "Bearer token"
-// @Success 200 {object} inbound.UserDTO
-// @Failure 401 {object} errorResponse
-// @Router /auth/me [get]
+//
+//	@Summary		Get current user
+//	@Description	Returns the authenticated user's profile
+//	@Tags			auth
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			Authorization	header		string	true	"Bearer token"
+//	@Success		200				{object}	inbound.UserDTO
+//	@Failure		401				{object}	errorResponse
+//	@Router			/auth/me [get]
 func MeHandler(svc inbound.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := middleware.ExtractToken(c)

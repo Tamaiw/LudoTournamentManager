@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   http.createLeagueRequest:
     properties:
@@ -301,8 +302,12 @@ definitions:
     - TournamentStatusDraft
     - TournamentStatusLive
     - TournamentStatusComplete
+host: localhost:8080
 info:
   contact: {}
+  description: API for managing Ludo tournaments and leagues
+  title: Ludo Tournament Management API
+  version: "1.0"
 paths:
   /auth/login:
     post:
@@ -721,7 +726,7 @@ paths:
       summary: Get a tournament by ID
       tags:
       - tournaments
-    put:
+    patch:
       consumes:
       - application/json
       description: Updates an existing tournament's settings
@@ -915,7 +920,7 @@ paths:
       summary: Delete a user
       tags:
       - users
-    put:
+    patch:
       consumes:
       - application/json
       description: Updates an existing user's role (admin only)

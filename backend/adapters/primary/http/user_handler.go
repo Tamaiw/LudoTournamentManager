@@ -3,22 +3,22 @@ package http
 import (
 	"net/http"
 
-	"ludo-tournament/core/domain/models"
 	"ludo-tournament/core/ports/inbound"
 
 	"github.com/gin-gonic/gin"
 )
 
 // ListUsersHandler handles listing all users (admin only)
-// @Summary List all users
-// @Description Retrieves a list of all users (admin only)
-// @Tags users
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Success 200 {object} listUsersResponse
-// @Failure 500 {object} errorResponse
-// @Router /users [get]
+//
+//	@Summary		List all users
+//	@Description	Retrieves a list of all users (admin only)
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	listUsersResponse
+//	@Failure		500	{object}	errorResponse
+//	@Router			/users [get]
 func ListUsersHandler(svc inbound.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		users, err := svc.ListUsers(c.Request.Context())
@@ -32,23 +32,24 @@ func ListUsersHandler(svc inbound.UserService) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"users": users})
+		c.JSON(http.StatusOK, listUsersResponse{Users: users})
 	}
 }
 
 // UpdateUserHandler handles updating a user (admin only)
-// @Summary Update a user
-// @Description Updates an existing user's role (admin only)
-// @Tags users
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param id path string true "User ID"
-// @Param request body updateUserRequest true "User details"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} errorResponse
-// @Failure 500 {object} errorResponse
-// @Router /users/{id} [put]
+//
+//	@Summary		Update a user
+//	@Description	Updates an existing user's role (admin only)
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		string				true	"User ID"
+//	@Param			request	body		updateUserRequest	true	"User details"
+//	@Success		200		{object}	updateUserResponse
+//	@Failure		400		{object}	errorResponse
+//	@Failure		500		{object}	errorResponse
+//	@Router			/users/{id} [patch]
 func UpdateUserHandler(svc inbound.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -86,22 +87,23 @@ func UpdateUserHandler(svc inbound.UserService) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "user updated"})
+		c.JSON(http.StatusOK, updateUserResponse{Message: "user updated"})
 	}
 }
 
 // DeleteUserHandler handles soft-deleting a user (admin only)
-// @Summary Delete a user
-// @Description Soft-deletes a user by their unique identifier (admin only)
-// @Tags users
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param id path string true "User ID"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} errorResponse
-// @Failure 500 {object} errorResponse
-// @Router /users/{id} [delete]
+//
+//	@Summary		Delete a user
+//	@Description	Soft-deletes a user by their unique identifier (admin only)
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string	true	"User ID"
+//	@Success		200	{object}	deleteUserResponse
+//	@Failure		400	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Router			/users/{id} [delete]
 func DeleteUserHandler(svc inbound.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -125,16 +127,24 @@ func DeleteUserHandler(svc inbound.UserService) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
+		c.JSON(http.StatusOK, deleteUserResponse{Message: "user deleted"})
 	}
 }
 
 // Request/Response types for Swagger
 
 type listUsersResponse struct {
-	Users []models.User `json:"users" example:"[{\"id\":\"550e8400-e29b-41d4-a716-446655440000\",\"email\":\"user@example.com\",\"role\":\"member\"}]"`
+	Users []inbound.UserDTO `json:"users"`
 }
 
 type updateUserRequest struct {
 	Role string `json:"role" example:"admin"`
+}
+
+type updateUserResponse struct {
+	Message string `json:"message" example:"user updated"`
+}
+
+type deleteUserResponse struct {
+	Message string `json:"message" example:"user deleted"`
 }
