@@ -29,7 +29,7 @@ export function NextEventCard({ event }: NextEventCardProps) {
     <Card className="border-l-4 border-l-blue-500">
       <div className="flex items-center gap-2 mb-1">
         <Badge variant={event.status as any}>{event.status}</Badge>
-        <span className="text-xs text-gray-500">{event.type}</span>
+        <Badge variant="draft">{event.type}</Badge>
       </div>
       <h2 className="text-xl font-semibold mb-2">{event.name}</h2>
       <Link to={event.type === 'tournament' ? `/tournaments/${event.id}` : `/leagues/${event.id}`}>
