@@ -253,7 +253,7 @@ func (s *UserService) AcceptInvite(ctx context.Context, code string, email strin
 }
 
 // seedAdminIfNeeded creates an initial admin user if no users exist
-func seedAdminIfNeeded(ctx context.Context, userRepo *persistence.GormUserRepository) error {
+func seedAdminIfNeeded(ctx context.Context, userRepo outbound.UserRepository) error {
 	users, err := userRepo.List(ctx)
 	if err != nil {
 		return err
@@ -286,7 +286,7 @@ func seedAdminIfNeeded(ctx context.Context, userRepo *persistence.GormUserReposi
 			return err
 		}
 
-		log.Printf("Created initial admin user: %s (password: %s)", adminEmail, adminPassword)
+		log.Printf("Created initial admin user: %s", adminEmail)
 		log.Printf("WARNING: Change this password immediately in production!")
 	}
 
