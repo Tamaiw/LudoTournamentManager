@@ -1,3 +1,5 @@
+import { Role, User, League, PlayerStanding, Tournament, Match, GamePairing, MatchResult } from '../types';
+
 const API_BASE = '';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -20,16 +22,18 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   login: (email: string, password: string) =>
-    request<{ token: string }>('/auth/login', {
+    request<{ user: User }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
 
   register: (email: string, password: string, inviteCode: string) =>
-    request<{ token: string }>('/auth/register', {
+    request<{ user: User }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, invite_code: inviteCode }),
     }),
+
+  logout: () => request<void>('/auth/logout', { method: 'POST' }),
 
   getMe: () => request<User>('/auth/me'),
 
@@ -50,6 +54,19 @@ export const api = {
   getLeague: (id: string) => request<League>(`/leagues/${id}`),
   getLeagueStandings: (id: string) => request<PlayerStanding[]>(`/leagues/${id}/standings`),
   generatePairings: (leagueId: string, playDate: string) =>
+    request(`/leagues/${leagueId}/pairings/generate`, {
+      method: 'POST',
+      body: JSON.stringify({ play_date: playDate }),
+    }),
+
+  listUsers: () => request<{ users: User[] }>('/users'),
+  updateUser: (id: string, data: { role: Role }) =>
+    request<User>(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteUser: (id: string) =>
+    request<void>(`/users/${id}`, { method: 'DELETE' }),
+  createLeague: (data: Partial<League>) =>
+    request<League>('/leagues', { method: 'POST', body: JSON.stringify(data) }),
+  generateLeaguePairings: (leagueId: string, playDate: string) =>
     request(`/leagues/${leagueId}/pairings/generate`, {
       method: 'POST',
       body: JSON.stringify({ play_date: playDate }),

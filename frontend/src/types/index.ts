@@ -14,6 +14,11 @@ export interface TournamentSettings {
   defaultReporter?: string;
 }
 
+export interface AdvancementConfig {
+  placement: number;
+  advanceTo?: string;
+}
+
 export interface Tournament {
   id: string;
   name: string;
@@ -53,6 +58,12 @@ export interface Match {
   status: 'pending' | 'completed';
   placementPoints?: number[];
   completedAt?: string;
+}
+
+export interface MatchResult {
+  playerId: string;
+  placement: number;
+  points: number;
 }
 
 export interface GamePairing {
