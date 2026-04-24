@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NextEventCard } from '../components/dashboard/NextEventCard';
 import { QuickActions } from '../components/dashboard/QuickActions';
 import { Card } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
+import { Badge, BadgeVariant } from '../components/ui/Badge';
 import { Link } from 'react-router-dom';
 
 export function DashboardPage() {
@@ -67,7 +67,7 @@ export function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{t.name}</p>
-                    <Badge variant={t.status as any}>{t.status}</Badge>
+                    <Badge variant={t.status as BadgeVariant}>{t.status}</Badge>
                   </div>
                   <Link to={`/tournaments/${t.id}`} className="text-blue-600 hover:underline text-sm">View</Link>
                 </div>
@@ -78,7 +78,7 @@ export function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{l.name}</p>
-                    <Badge variant={l.status as any}>{l.status}</Badge>
+                    <Badge variant={l.status as BadgeVariant}>{l.status}</Badge>
                   </div>
                   <Link to={`/leagues/${l.id}`} className="text-blue-600 hover:underline text-sm">View</Link>
                 </div>
