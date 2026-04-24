@@ -1,10 +1,13 @@
 package http
 
 import (
+	_ "ludo-tournament/docs" // swagger docs
 	"ludo-tournament/adapters/primary/http/middleware"
 	"ludo-tournament/core/ports/inbound"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // SetupRouter configures the Gin router with all routes
@@ -21,13 +24,16 @@ func SetupRouter(
 		c.JSON(200, gin.H{"status": "ok"})
 	})
 
+	// Swagger UI
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// Auth routes (public)
 	auth := r.Group("/auth")
 	{
 		auth.POST("/register", RegisterHandler(authService))
 		auth.POST("/login", LoginHandler(authService))
 		auth.POST("/logout", LogoutHandler(authService))
-		auth.GET("/me", AuthMiddleware(), MeHandler(authService))
+		auth.GET("/me", middleware.AuthMiddleware(), MeHandler(authService))
 	}
 
 	// Protected routes

@@ -1,0 +1,954 @@
+definitions:
+  http.createLeagueRequest:
+    properties:
+      name:
+        example: Spring League 2026
+        type: string
+      organizerId:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      settings:
+        $ref: '#/definitions/models.LeagueSettings'
+    type: object
+  http.createTournamentRequest:
+    properties:
+      name:
+        example: Spring Championship 2026
+        type: string
+      organizerId:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      settings:
+        $ref: '#/definitions/models.TournamentSettings'
+    type: object
+  http.deleteLeagueResponse:
+    description: Response returned after successfully deleting a league
+    properties:
+      message:
+        example: league deleted
+        type: string
+    type: object
+  http.deleteUserResponse:
+    properties:
+      message:
+        example: user deleted
+        type: string
+    type: object
+  http.errorResponse:
+    properties:
+      error:
+        properties:
+          code:
+            example: INVALID_INPUT
+            type: string
+          message:
+            example: validation failed
+            type: string
+        type: object
+    type: object
+  http.generateLeaguePairingsRequest:
+    properties:
+      playDate:
+        example: "2026-04-25"
+        type: string
+    type: object
+  http.leagueStandingsResponse:
+    description: Response containing league standings data
+    properties:
+      standings: {}
+    type: object
+  http.listUsersResponse:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/inbound.UserDTO'
+        type: array
+    type: object
+  http.loginRequest:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        example: securepassword123
+        type: string
+    type: object
+  http.registerRequest:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      inviteCode:
+        example: ABC123DEF456
+        type: string
+      password:
+        example: securepassword123
+        type: string
+    type: object
+  http.reportMatchRequest:
+    properties:
+      matchId:
+        example: 550e8400-e29b-41d4-a716-446655440001
+        type: string
+      reportedBy:
+        example: 550e8400-e29b-41d4-a716-446655440002
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/inbound.MatchResult'
+        type: array
+    type: object
+  http.updateTournamentRequest:
+    properties:
+      settings:
+        $ref: '#/definitions/models.TournamentSettings'
+    type: object
+  http.updateUserRequest:
+    properties:
+      role:
+        example: admin
+        type: string
+    type: object
+  http.updateUserResponse:
+    properties:
+      message:
+        example: user updated
+        type: string
+    type: object
+  inbound.MatchResult:
+    properties:
+      placement:
+        description: 1, 2, 3, or 4
+        type: integer
+      playerId:
+        type: string
+      seatColor:
+        $ref: '#/definitions/models.SeatColor'
+    type: object
+  inbound.UserDTO:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      role:
+        type: string
+    type: object
+  models.AdvancementConfig:
+    properties:
+      advancement_per_game:
+        items:
+          $ref: '#/definitions/models.AdvancementPerGame'
+        type: array
+      games:
+        type: integer
+      round:
+        type: string
+    type: object
+  models.AdvancementPerGame:
+    properties:
+      game_ids:
+        items:
+          type: integer
+        type: array
+      placements:
+        description: e.g., [1, 2] means 1st and 2nd advance
+        items:
+          type: integer
+        type: array
+    type: object
+  models.League:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      modified_at:
+        type: string
+      modified_by:
+        type: string
+      name:
+        type: string
+      organizer_id:
+        type: string
+      settings:
+        $ref: '#/definitions/models.LeagueSettings'
+      status:
+        $ref: '#/definitions/models.LeagueStatus'
+    type: object
+  models.LeagueSettings:
+    properties:
+      games_per_player:
+        type: integer
+      scoring_rules:
+        items:
+          $ref: '#/definitions/models.ScoringRule'
+        type: array
+      tables_count:
+        type: integer
+    type: object
+  models.LeagueStatus:
+    enum:
+    - draft
+    - live
+    - completed
+    type: string
+    x-enum-varnames:
+    - LeagueStatusDraft
+    - LeagueStatusLive
+    - LeagueStatusComplete
+  models.Match:
+    properties:
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      league_id:
+        type: string
+      modified_at:
+        type: string
+      modified_by:
+        type: string
+      placement_points:
+        items:
+          type: integer
+        type: array
+      round:
+        type: integer
+      status:
+        $ref: '#/definitions/models.MatchStatus'
+      table_number:
+        type: integer
+      tournament_id:
+        type: string
+    type: object
+  models.MatchStatus:
+    enum:
+    - pending
+    - completed
+    type: string
+    x-enum-varnames:
+    - MatchStatusPending
+    - MatchStatusCompleted
+  models.ScoringRule:
+    properties:
+      placement:
+        description: 1, 2, 3, or 4
+        type: integer
+      points:
+        type: number
+    type: object
+  models.SeatColor:
+    enum:
+    - yellow
+    - green
+    - blue
+    - red
+    type: string
+    x-enum-varnames:
+    - SeatYellow
+    - SeatGreen
+    - SeatBlue
+    - SeatRed
+  models.Tournament:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      modified_at:
+        type: string
+      modified_by:
+        type: string
+      name:
+        type: string
+      organizer_id:
+        type: string
+      settings:
+        $ref: '#/definitions/models.TournamentSettings'
+      status:
+        $ref: '#/definitions/models.TournamentStatus'
+      type:
+        type: string
+    type: object
+  models.TournamentSettings:
+    properties:
+      advancement:
+        items:
+          $ref: '#/definitions/models.AdvancementConfig'
+        type: array
+      default_reporter:
+        description: '"lowest_advancing"'
+        type: string
+      tables_count:
+        type: integer
+    type: object
+  models.TournamentStatus:
+    enum:
+    - draft
+    - live
+    - completed
+    type: string
+    x-enum-varnames:
+    - TournamentStatusDraft
+    - TournamentStatusLive
+    - TournamentStatusComplete
+info:
+  contact: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates user with email and password, returns JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      summary: Login user
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Invalidates the current session (client should discard token)
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout user
+      tags:
+      - auth
+  /auth/me:
+    get:
+      description: Returns the authenticated user's profile
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/inbound.UserDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get current user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account with email, password, and invite code
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+  /leagues:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of all leagues
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.League'
+            type: array
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all leagues
+      tags:
+      - leagues
+    post:
+      consumes:
+      - application/json
+      description: Creates a new league with the given settings
+      parameters:
+      - description: League details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.createLeagueRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.League'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new league
+      tags:
+      - leagues
+  /leagues/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a league by its unique identifier
+      parameters:
+      - description: League ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.deleteLeagueResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a league
+      tags:
+      - leagues
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a league by its unique identifier
+      parameters:
+      - description: League ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.League'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a league by ID
+      tags:
+      - leagues
+  /leagues/{id}/pairings:
+    post:
+      consumes:
+      - application/json
+      description: Generates pairings for a league for a specific play date
+      parameters:
+      - description: League ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Pairing details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.generateLeaguePairingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Generate league pairings
+      tags:
+      - leagues
+  /leagues/{id}/standings:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the standings for a league
+      parameters:
+      - description: League ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.leagueStandingsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get league standings
+      tags:
+      - leagues
+  /tournaments:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of all tournaments
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tournament'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all tournaments
+      tags:
+      - tournaments
+    post:
+      consumes:
+      - application/json
+      description: Creates a new knockout tournament with the given settings
+      parameters:
+      - description: Tournament details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.createTournamentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Tournament'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new tournament
+      tags:
+      - tournaments
+  /tournaments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a tournament by its unique identifier
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a tournament
+      tags:
+      - tournaments
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a tournament by its unique identifier
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tournament'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a tournament by ID
+      tags:
+      - tournaments
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing tournament's settings
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tournament settings
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.updateTournamentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a tournament
+      tags:
+      - tournaments
+  /tournaments/{id}/matches:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all matches for a specific tournament
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Match'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: List matches for a tournament
+      tags:
+      - tournaments
+  /tournaments/{id}/pairings:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the pairings for the current round of a tournament
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get current round pairings
+      tags:
+      - tournaments
+  /tournaments/{id}/report:
+    post:
+      consumes:
+      - application/json
+      description: Reports the result of a match in a tournament
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Match result details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.reportMatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Report a match result
+      tags:
+      - tournaments
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of all users (admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.listUsersResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all users
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft-deletes a user by their unique identifier (admin only)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.deleteUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing user's role (admin only)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.updateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.updateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a user
+      tags:
+      - users
+swagger: "2.0"
