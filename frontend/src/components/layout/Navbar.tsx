@@ -7,7 +7,12 @@ export function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout();
+    try {
+      await logout();
+    } catch (err) {
+      // Still navigate to login even if backend logout fails
+      // The session check on next page load will handle it
+    }
     navigate('/login');
   };
 
