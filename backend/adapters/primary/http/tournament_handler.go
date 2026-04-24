@@ -246,7 +246,7 @@ func ListTournamentMatchesHandler(svc inbound.TournamentService) gin.HandlerFunc
 //	@Success		200		{object}	map[string]string
 //	@Failure		400		{object}	errorResponse
 //	@Failure		500		{object}	errorResponse
-//	@Router			/tournaments/{id}/report [post]
+//	@Router			/tournaments/{id}/matches [post]
 func ReportMatchHandler(svc inbound.TournamentService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tournamentID := c.Param("id")

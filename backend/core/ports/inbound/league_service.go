@@ -12,7 +12,7 @@ type LeagueService interface {
 	DeleteLeague(ctx context.Context, id string) error
 	GenerateSchedule(ctx context.Context, leagueID string, playDates []string) error
 	GeneratePairings(ctx context.Context, leagueID string, playDate string) ([]TablePairing, error)
-	ReportLeagueMatch(ctx context.Context, matchID string, results []MatchResult, reportedBy string) error
+	ReportLeagueMatch(ctx context.Context, matchID string, results []LeagueMatchResultInput, reportedBy string) error
 	GetStandings(ctx context.Context, leagueID string) ([]PlayerStanding, error)
 	AddTiebreaker(ctx context.Context, leagueID string, playerIDs []string) error
 }
@@ -33,7 +33,7 @@ type PlayerStanding struct {
 	Rank        int     `json:"rank"`
 }
 
-type MatchResult struct {
+type LeagueMatchResultInput struct {
 	PlayerID  string `json:"playerId"`
 	Placement int    `json:"placement"` // 1, 2, 3, or 4
 }

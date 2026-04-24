@@ -37,7 +37,7 @@ docker run -d \
 
 **Option B: docker-compose**
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres
 ```
 
 ### 3. Configure Environment
@@ -91,7 +91,7 @@ cd frontend && npm test
 ### Full Stack (Docker Compose)
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 Access:
@@ -270,7 +270,7 @@ npm run dev -- --debug
 
 ```bash
 # Build images
-docker-compose build
+docker compose build
 
 # Push to registry (production)
 docker push registry.example.com/ludo-backend:latest

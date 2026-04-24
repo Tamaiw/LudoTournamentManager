@@ -374,7 +374,7 @@ func (s *LeagueService) GeneratePairings(ctx context.Context, leagueID string, p
 }
 
 // ReportLeagueMatch reports results for a league match
-func (s *LeagueService) ReportLeagueMatch(ctx context.Context, matchID string, results []inbound.MatchResult, reportedBy string) error {
+func (s *LeagueService) ReportLeagueMatch(ctx context.Context, matchID string, results []inbound.LeagueMatchResultInput, reportedBy string) error {
 	match, err := s.matchRepo.GetByID(ctx, matchID)
 	if err != nil {
 		return err

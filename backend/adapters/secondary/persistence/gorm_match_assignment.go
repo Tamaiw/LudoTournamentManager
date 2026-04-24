@@ -3,9 +3,10 @@ package persistence
 import (
 	"context"
 
-	"gorm.io/gorm"
 	"ludo-tournament/core/domain/models"
 	"ludo-tournament/core/ports/outbound"
+
+	"gorm.io/gorm"
 )
 
 type GormMatchAssignmentRepository struct {

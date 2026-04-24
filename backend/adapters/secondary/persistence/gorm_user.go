@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
-	"gorm.io/gorm"
 	"ludo-tournament/core/domain/models"
 	"ludo-tournament/core/ports/outbound"
+
+	"gorm.io/gorm"
 )
 
 type GormUserRepository struct {

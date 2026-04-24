@@ -6,10 +6,11 @@ import (
 	"os"
 	"time"
 
+	"ludo-tournament/core/domain/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"ludo-tournament/core/domain/models"
 )
 
 func NewPostgresDB(ctx context.Context) (*gorm.DB, error) {

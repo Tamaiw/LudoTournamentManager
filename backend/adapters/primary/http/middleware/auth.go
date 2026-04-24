@@ -28,7 +28,7 @@ const (
 // AuthMiddleware validates JWT tokens and sets user info in context
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := extractToken(c)
+		token := ExtractToken(c)
 		if token == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": gin.H{
@@ -58,8 +58,8 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-// extractToken extracts the JWT token from the Authorization header
-func extractToken(c *gin.Context) string {
+// ExtractToken extracts the JWT token from the Authorization header
+func ExtractToken(c *gin.Context) string {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		return ""

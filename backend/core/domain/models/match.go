@@ -46,3 +46,17 @@ type MatchAssignment struct {
 	ModifiedBy   *string    `gorm:"type:uuid" json:"modified_by,omitempty"`
 	DeletedAt    *time.Time `gorm:"index" json:"deleted_at,omitempty"`
 }
+
+// Pair represents two players who have been paired together
+type Pair struct {
+	Player1 string `json:"player1"`
+	Player2 string `json:"player2"`
+}
+
+// LeagueMatchResult represents a player's result in a league match
+type LeagueMatchResult struct {
+	MatchID   string  `json:"matchId,omitempty"`
+	PlayerID  string  `json:"playerId"`
+	Placement int     `json:"placement"`
+	Points    float64 `json:"points,omitempty"`
+}

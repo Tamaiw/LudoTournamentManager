@@ -10,17 +10,18 @@ import (
 )
 
 // CreateLeagueHandler handles league creation
-// @Summary Create a new league
-// @Description Creates a new league with the given settings
-// @Tags leagues
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param request body createLeagueRequest true "League details"
-// @Success 201 {object} models.League
-// @Failure 400 {object} errorResponse
-// @Failure 500 {object} errorResponse
-// @Router /leagues [post]
+//
+//	@Summary		Create a new league
+//	@Description	Creates a new league with the given settings
+//	@Tags			leagues
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			request	body		createLeagueRequest	true	"League details"
+//	@Success		201		{object}	models.League
+//	@Failure		400		{object}	errorResponse
+//	@Failure		500		{object}	errorResponse
+//	@Router			/leagues [post]
 func CreateLeagueHandler(svc inbound.LeagueService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
@@ -55,15 +56,16 @@ func CreateLeagueHandler(svc inbound.LeagueService) gin.HandlerFunc {
 }
 
 // ListLeaguesHandler handles listing leagues
-// @Summary List all leagues
-// @Description Retrieves a list of all leagues
-// @Tags leagues
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Success 200 {array} models.League
-// @Failure 500 {object} errorResponse
-// @Router /leagues [get]
+//
+//	@Summary		List all leagues
+//	@Description	Retrieves a list of all leagues
+//	@Tags			leagues
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{array}		models.League
+//	@Failure		501	{object}	errorResponse
+//	@Router			/leagues [get]
 func ListLeaguesHandler(svc inbound.LeagueService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(501, gin.H{"error": gin.H{
@@ -74,17 +76,18 @@ func ListLeaguesHandler(svc inbound.LeagueService) gin.HandlerFunc {
 }
 
 // GetLeagueHandler handles getting a single league
-// @Summary Get a league by ID
-// @Description Retrieves a league by its unique identifier
-// @Tags leagues
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param id path string true "League ID"
-// @Success 200 {object} models.League
-// @Failure 400 {object} errorResponse
-// @Failure 404 {object} errorResponse
-// @Router /leagues/{id} [get]
+//
+//	@Summary		Get a league by ID
+//	@Description	Retrieves a league by its unique identifier
+//	@Tags			leagues
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string	true	"League ID"
+//	@Success		200	{object}	models.League
+//	@Failure		400	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Router			/leagues/{id} [get]
 func GetLeagueHandler(svc inbound.LeagueService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -114,17 +117,18 @@ func GetLeagueHandler(svc inbound.LeagueService) gin.HandlerFunc {
 }
 
 // DeleteLeagueHandler handles deleting a league
-// @Summary Delete a league
-// @Description Deletes a league by its unique identifier
-// @Tags leagues
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param id path string true "League ID"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} errorResponse
-// @Failure 500 {object} errorResponse
-// @Router /leagues/{id} [delete]
+//
+//	@Summary		Delete a league
+//	@Description	Deletes a league by its unique identifier
+//	@Tags			leagues
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string	true	"League ID"
+//	@Success		200	{object}	deleteLeagueResponse
+//	@Failure		400	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Router			/leagues/{id} [delete]
 func DeleteLeagueHandler(svc inbound.LeagueService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -153,17 +157,18 @@ func DeleteLeagueHandler(svc inbound.LeagueService) gin.HandlerFunc {
 }
 
 // GetLeagueStandingsHandler handles getting league standings
-// @Summary Get league standings
-// @Description Retrieves the standings for a league
-// @Tags leagues
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param id path string true "League ID"
-// @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} errorResponse
-// @Failure 500 {object} errorResponse
-// @Router /leagues/{id}/standings [get]
+//
+//	@Summary		Get league standings
+//	@Description	Retrieves the standings for a league
+//	@Tags			leagues
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string	true	"League ID"
+//	@Success		200	{object}	leagueStandingsResponse
+//	@Failure		400	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+//	@Router			/leagues/{id}/standings [get]
 func GetLeagueStandingsHandler(svc inbound.LeagueService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -193,18 +198,19 @@ func GetLeagueStandingsHandler(svc inbound.LeagueService) gin.HandlerFunc {
 }
 
 // GenerateLeaguePairingsHandler handles generating pairings for a league
-// @Summary Generate league pairings
-// @Description Generates pairings for a league for a specific play date
-// @Tags leagues
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param id path string true "League ID"
-// @Param request body generateLeaguePairingsRequest true "Pairing details"
-// @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} errorResponse
-// @Failure 500 {object} errorResponse
-// @Router /leagues/{id}/pairings [post]
+//
+//	@Summary		Generate league pairings
+//	@Description	Generates pairings for a league for a specific play date
+//	@Tags			leagues
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		string							true	"League ID"
+//	@Param			request	body		generateLeaguePairingsRequest	true	"Pairing details"
+//	@Success		200		{object}	map[string]interface{}
+//	@Failure		400		{object}	errorResponse
+//	@Failure		500		{object}	errorResponse
+//	@Router			/leagues/{id}/pairings [post]
 func GenerateLeaguePairingsHandler(svc inbound.LeagueService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -252,9 +258,23 @@ func GenerateLeaguePairingsHandler(svc inbound.LeagueService) gin.HandlerFunc {
 type createLeagueRequest struct {
 	Name        string                `json:"name" example:"Spring League 2026"`
 	OrganizerID string                `json:"organizerId" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Settings    models.LeagueSettings `json:"settings" example:"{}"`
+	Settings    models.LeagueSettings `json:"settings"`
 }
 
 type generateLeaguePairingsRequest struct {
 	PlayDate string `json:"playDate" example:"2026-04-25"`
+}
+
+// deleteLeagueResponse defines the response for delete league
+//
+//	@Description	Response returned after successfully deleting a league
+type deleteLeagueResponse struct {
+	Message string `json:"message" example:"league deleted"`
+}
+
+// leagueStandingsResponse defines the response for league standings
+//
+//	@Description	Response containing league standings data
+type leagueStandingsResponse struct {
+	Standings interface{} `json:"standings"`
 }
