@@ -2,10 +2,17 @@ import { Role, User, League, PlayerStanding, Tournament, Match, GamePairing, Mat
 
 const API_BASE = '';
 
-let authToken: string | null = null;
+const TOKEN_KEY = 'auth_token';
+
+let authToken: string | null = localStorage.getItem(TOKEN_KEY);
 
 export function setAuthToken(token: string | null) {
   authToken = token;
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
 }
 
 export function getAuthToken(): string | null {
