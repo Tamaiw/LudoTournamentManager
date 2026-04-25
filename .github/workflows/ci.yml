@@ -37,6 +37,9 @@ jobs:
         run: |
           go install github.com/golangci-lint/cmd/golangci-lint@latest
           golangci-lint run ./...
+      - name: Format
+        if: steps.changed-backend.outputs.has_changes == 'true'
+        run: gofmt -s -w .
       - name: Build
         if: steps.changed-backend.outputs.has_changes == 'true'
         run: go build ./...
