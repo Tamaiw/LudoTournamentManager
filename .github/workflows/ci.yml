@@ -34,18 +34,18 @@ jobs:
         if: steps.changed-backend.outputs.has_changes == 'true'
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0
-          golangci-lint run ./... || { echo "=== Lint errors ==="; golangci-lint run ./...; exit 1; }
+          cd backend && golangci-lint run ./... || { echo "=== Lint errors ==="; golangci-lint run ./...; exit 1; }
       - name: Format
         if: steps.changed-backend.outputs.has_changes == 'true'
-        run: gofmt -s -w .
+        run: cd backend && gofmt -s -w .
       - name: Build
         if: steps.changed-backend.outputs.has_changes == 'true'
-        run: go build ./...
+        run: cd backend && go build ./...
       - name: Test + Coverage Gate
         if: steps.changed-backend.outputs.has_changes == 'true'
         run: |
           apt-get update && apt-get install -y bc
-          go test ./... -coverprofile=coverage.out -covermode=atomic
+          cd backend && go test ./... -coverprofile=coverage.out -covermode=atomic
           COVERAGE=$(go tool cover -func=coverage.out | grep "^total:" | awk '{print $3}' | tr -d '%')
           if (( $(echo "$COVERAGE < 80" | bc -l) )); then
             echo "Coverage is ${COVERAGE}%, below required 80%"
@@ -56,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend-coverage
-          path: coverage.out
+          path: backend/coverage.out
       - name: No relevant changes
         if: steps.changed-backend.outputs.has_changes == 'false'
         run: echo "No backend or workflow file changes detected — skipping backend job"
