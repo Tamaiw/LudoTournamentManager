@@ -1,1 +1,7 @@
 .worktrees/
+frontend/node_modules/
+backend/bin/
+backend/cmd/server/server.db
+backend/cmd/server/server.db-journal
+backend/cmd/server/server.db-shm
+backend/cmd/server/server.db-wal
