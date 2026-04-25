@@ -1,4 +1,4 @@
-type BadgeVariant = 'live' | 'draft' | 'completed' | 'admin' | 'member' | 'guest';
+export type BadgeVariant = 'live' | 'draft' | 'completed' | 'admin' | 'member' | 'guest';
 
 interface BadgeProps {
   variant: BadgeVariant;

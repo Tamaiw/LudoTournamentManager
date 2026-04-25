@@ -2,18 +2,31 @@ import { Role, User, League, PlayerStanding, Tournament, Match, GamePairing, Mat
 
 const API_BASE = '';
 
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null) {
+  authToken = token;
+}
+
+export function getAuthToken(): string | null {
+  return authToken;
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const headers = new Headers(options?.headers);
+  headers.set('Content-Type', 'application/json');
+
+  if (authToken) {
+    headers.set('Authorization', `Bearer ${authToken}`);
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-    credentials: 'include',
-  });
+    headers,
+  } as RequestInit);
 
   if (!res.ok) {
-    const error = await res.json();
+    const error = await res.json().catch(() => ({}));
     throw new Error(error.error?.message || 'Request failed');
   }
 
@@ -22,13 +35,13 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   login: (email: string, password: string) =>
-    request<{ user: User }>('/auth/login', {
+    request<{ token: string }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
 
   register: (email: string, password: string, inviteCode: string) =>
-    request<{ user: User }>('/auth/register', {
+    request<{ token: string }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, invite_code: inviteCode }),
     }),
