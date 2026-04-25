@@ -24,9 +24,11 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
             exit 0
           fi
-          CHANGED=$(git diff --name-only origin/main...HEAD | grep -E '^backend/|^.github/workflows/ci\.yml$' || true)
-          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
-          echo "has_changes=$(if [ -n "$CHANGED" ]; then echo "true"; else echo "false"; fi)" >> $GITHUB_OUTPUT
+          if git diff --name-only origin/main...HEAD | grep -qE '^backend/|^.github/workflows/ci\.yml$'; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
       - name: Set up Go
         if: steps.changed-backend.outputs.has_changes == 'true'
         uses: actions/setup-go@v5
@@ -76,9 +78,11 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
             exit 0
           fi
-          CHANGED=$(git diff --name-only origin/main...HEAD | grep -E '^frontend/|^.github/workflows/ci\.yml$' || true)
-          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
-          echo "has_changes=$(if [ -n "$CHANGED" ]; then echo "true"; else echo "false"; fi)" >> $GITHUB_OUTPUT
+          if git diff --name-only origin/main...HEAD | grep -qE '^frontend/|^.github/workflows/ci\.yml$'; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
       - name: Set up Node
         if: steps.changed-frontend.outputs.has_changes == 'true'
         uses: actions/setup-node@v4
