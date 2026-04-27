@@ -330,21 +330,3 @@ func GetPairingsHandler(svc inbound.TournamentService) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"pairings": pairings})
 	}
 }
-
-// Request/Response types for Swagger
-
-type createTournamentRequest struct {
-	Name        string                    `json:"name" example:"Spring Championship 2026"`
-	OrganizerID string                    `json:"organizerId" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Settings    models.TournamentSettings `json:"settings"`
-}
-
-type updateTournamentRequest struct {
-	Settings models.TournamentSettings `json:"settings"`
-}
-
-type reportMatchRequest struct {
-	MatchID    string                `json:"matchId" example:"550e8400-e29b-41d4-a716-446655440001"`
-	Results    []inbound.MatchResult `json:"results"`
-	ReportedBy string                `json:"reportedBy" example:"550e8400-e29b-41d4-a716-446655440002"`
-}

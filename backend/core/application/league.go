@@ -198,17 +198,6 @@ func countConflicts(player string, opponents []string, conflictMap map[string]ma
 	return count
 }
 
-// hasPlayedTogether checks if two players have previously played together
-func hasPlayedTogether(p1, p2 string, priorPairings []Pair) bool {
-	for _, pair := range priorPairings {
-		if (pair.Player1 == p1 && pair.Player2 == p2) ||
-			(pair.Player1 == p2 && pair.Player2 == p1) {
-			return true
-		}
-	}
-	return false
-}
-
 // CalculateLeagueStandings calculates standings based on match results and scoring rules
 func CalculateLeagueStandings(matchResults []LeagueMatchResult, scoringRules []models.ScoringRule) []inbound.PlayerStanding {
 	if len(matchResults) == 0 {
@@ -354,10 +343,11 @@ func (s *LeagueService) GeneratePairings(ctx context.Context, leagueID string, p
 	// Build prior pairings from completed matches
 	var priorPairings []Pair
 	for _, match := range matches {
-		if match.Status == models.MatchStatusCompleted {
-			// In a real implementation, we would get player assignments from match
-			// For now, we assume the match has player assignments stored elsewhere
+		if match.Status != models.MatchStatusCompleted {
+			continue
 		}
+		// In a real implementation, we would get player assignments from match
+		// For now, we assume the match has player assignments stored elsewhere
 	}
 
 	// Get league players (in real impl, would come from league player registration)
@@ -405,10 +395,11 @@ func (s *LeagueService) GetStandings(ctx context.Context, leagueID string) ([]in
 	// Build match results from completed matches
 	var matchResults []LeagueMatchResult
 	for _, match := range matches {
-		if match.Status == models.MatchStatusCompleted && match.PlacementPoints != nil {
-			// In real impl, would iterate over match assignments
-			// Here we assume placement points are stored in match
+		if match.Status != models.MatchStatusCompleted || match.PlacementPoints == nil {
+			continue
 		}
+		// In real impl, would iterate over match assignments
+		// Here we assume placement points are stored in match
 	}
 
 	return CalculateLeagueStandings(matchResults, league.Settings.ScoringRules), nil

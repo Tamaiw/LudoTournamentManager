@@ -174,23 +174,3 @@ func MeHandler(svc inbound.AuthService) gin.HandlerFunc {
 		c.JSON(http.StatusOK, user)
 	}
 }
-
-// Request/Response types for Swagger
-
-type registerRequest struct {
-	Email      string `json:"email" example:"user@example.com"`
-	Password   string `json:"password" example:"securepassword123"`
-	InviteCode string `json:"inviteCode" example:"ABC123DEF456"`
-}
-
-type loginRequest struct {
-	Email    string `json:"email" example:"user@example.com"`
-	Password string `json:"password" example:"securepassword123"`
-}
-
-type errorResponse struct {
-	Error struct {
-		Code    string `json:"code" example:"INVALID_INPUT"`
-		Message string `json:"message" example:"validation failed"`
-	} `json:"error"`
-}

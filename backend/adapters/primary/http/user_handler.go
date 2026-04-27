@@ -137,10 +137,6 @@ type listUsersResponse struct {
 	Users []inbound.UserDTO `json:"users"`
 }
 
-type updateUserRequest struct {
-	Role string `json:"role" example:"admin"`
-}
-
 type updateUserResponse struct {
 	Message string `json:"message" example:"user updated"`
 }

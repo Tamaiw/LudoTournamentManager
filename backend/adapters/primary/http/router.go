@@ -7,9 +7,9 @@ package http
 // @BasePath /
 
 import (
-	_ "ludo-tournament/docs" // swagger docs
 	"ludo-tournament/adapters/primary/http/middleware"
 	"ludo-tournament/core/ports/inbound"
+	_ "ludo-tournament/docs" // swagger docs
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"

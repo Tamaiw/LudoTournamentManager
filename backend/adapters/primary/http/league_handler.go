@@ -252,29 +252,3 @@ func GenerateLeaguePairingsHandler(svc inbound.LeagueService) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"pairings": pairings})
 	}
 }
-
-// Request/Response types for Swagger
-
-type createLeagueRequest struct {
-	Name        string                `json:"name" example:"Spring League 2026"`
-	OrganizerID string                `json:"organizerId" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Settings    models.LeagueSettings `json:"settings"`
-}
-
-type generateLeaguePairingsRequest struct {
-	PlayDate string `json:"playDate" example:"2026-04-25"`
-}
-
-// deleteLeagueResponse defines the response for delete league
-//
-//	@Description	Response returned after successfully deleting a league
-type deleteLeagueResponse struct {
-	Message string `json:"message" example:"league deleted"`
-}
-
-// leagueStandingsResponse defines the response for league standings
-//
-//	@Description	Response containing league standings data
-type leagueStandingsResponse struct {
-	Standings interface{} `json:"standings"`
-}
