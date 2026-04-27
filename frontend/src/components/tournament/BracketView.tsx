@@ -2,11 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../../services/api';
 import { TableAssignment } from './TableAssignment';
-import { MatchCard } from './MatchCard';
-
-interface BracketData {
-  rounds: { [round: number]: GamePairing[] };
-}
+import { GamePairing } from '../../types';
 
 export function BracketView() {
   const { id } = useParams<{ id: string }>();

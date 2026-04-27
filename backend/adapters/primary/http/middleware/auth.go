@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 	"os"
 	"strings"
@@ -85,7 +86,7 @@ func validateJWT(tokenString string) (string, string, error) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", "", jwt.ErrTokenInvalidClaims
+		return "", "", errors.New("invalid token claims")
 	}
 
 	userID, _ := claims["user_id"].(string)

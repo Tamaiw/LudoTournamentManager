@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check if backend changed
+        id: changed-backend
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          git diff --name-only origin/main...HEAD | grep -qE '^backend/|^.github/workflows/ci\.yml$' && echo "has_changes=true" >> $GITHUB_OUTPUT || echo "has_changes=false" >> $GITHUB_OUTPUT
+      - name: Set up Go
+        if: steps.changed-backend.outputs.has_changes == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+      - name: Lint
+        if: steps.changed-backend.outputs.has_changes == 'true'
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0
+          cd backend && go mod tidy && go mod download && golangci-lint run ./... || { echo "=== Lint errors ==="; cd backend && golangci-lint run ./...; exit 1; }
+      - name: Format
+        if: steps.changed-backend.outputs.has_changes == 'true'
+        run: cd backend && gofmt -s -w .
+      - name: Build
+        if: steps.changed-backend.outputs.has_changes == 'true'
+        run: cd backend && go build ./...
+      - name: Test + Coverage Gate
+        if: steps.changed-backend.outputs.has_changes == 'true'
+        run: |
+          apt-get update && apt-get install -y bc
+          cd backend && go test ./... -coverprofile=coverage.out -covermode=atomic
+          COVERAGE=$(go tool cover -func=coverage.out | grep "^total:" | awk '{print $3}' | tr -d '%')
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Coverage is ${COVERAGE}%, below required 80%"
+            exit 1
+          fi
+      - name: Upload coverage
+        if: steps.changed-backend.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.out
+      - name: No relevant changes
+        if: steps.changed-backend.outputs.has_changes == 'false'
+        run: echo "No backend or workflow file changes detected — skipping backend job"
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check if frontend changed
+        id: changed-frontend
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          git diff --name-only origin/main...HEAD | grep -qE '^frontend/|^.github/workflows/ci\.yml$' && echo "has_changes=true" >> $GITHUB_OUTPUT || echo "has_changes=false" >> $GITHUB_OUTPUT
+      - name: Set up Node
+        if: steps.changed-frontend.outputs.has_changes == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install
+        if: steps.changed-frontend.outputs.has_changes == 'true'
+        run: npm ci
+        working-directory: frontend
+      - name: Lint
+        if: steps.changed-frontend.outputs.has_changes == 'true'
+        run: npm run lint
+        working-directory: frontend
+      - name: Build
+        if: steps.changed-frontend.outputs.has_changes == 'true'
+        run: npm run build
+        working-directory: frontend
+      - name: Test
+        if: steps.changed-frontend.outputs.has_changes == 'true'
+        run: npm test
+        working-directory: frontend
+      - name: Playwright Setup
+        if: steps.changed-frontend.outputs.has_changes == 'true'
+        run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Start services
+        if: steps.changed-frontend.outputs.has_changes == 'true'
+        run: docker-compose up -d && sleep 15
+        working-directory: .
+      - name: Run Playwright
+        if: steps.changed-frontend.outputs.has_changes == 'true'
+        run: npx playwright test
+        working-directory: frontend
+      - name: Upload Playwright report
+        if: failure() && steps.changed-frontend.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/test-results/
+      - name: Teardown
+        if: always() && steps.changed-frontend.outputs.has_changes == 'true'
+        run: docker-compose down
+      - name: No relevant changes
+        if: steps.changed-frontend.outputs.has_changes == 'false'
+        run: echo "No frontend or workflow file changes detected — skipping frontend job"
