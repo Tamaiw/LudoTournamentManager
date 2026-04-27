@@ -29,12 +29,12 @@ jobs:
         if: steps.changed-backend.outputs.has_changes == 'true'
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: '1.25'
       - name: Lint
         if: steps.changed-backend.outputs.has_changes == 'true'
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0
-          cd backend && go mod download && golangci-lint run ./... || { echo "=== Lint errors ==="; cd backend && golangci-lint run ./...; exit 1; }
+          cd backend && go mod tidy && go mod download && golangci-lint run ./... || { echo "=== Lint errors ==="; cd backend && golangci-lint run ./...; exit 1; }
       - name: Format
         if: steps.changed-backend.outputs.has_changes == 'true'
         run: cd backend && gofmt -s -w .
