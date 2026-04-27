@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { setAuthToken } from './api';
 
 describe('api token persistence', () => {

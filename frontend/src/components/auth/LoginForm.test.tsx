@@ -1,5 +1,6 @@
+/// <reference types="vitest" />
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter, useNavigate } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { LoginForm } from './LoginForm';
 import { useAuth } from '../../hooks/useAuth';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -27,6 +28,10 @@ describe('LoginForm navigation', () => {
 
     vi.mocked(useAuth).mockImplementation(() => ({
       login: loginMock,
+      user: null,
+      isLoading: false,
+      register: vi.fn(),
+      logout: vi.fn(),
     }));
 
     render(

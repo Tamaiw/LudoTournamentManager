@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useTournament, useTournamentMatches, useTournamentPairings } from '../hooks/useTournament';
 import { Tabs } from '../components/ui/Tabs';
-import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { BracketView } from '../components/tournament/BracketView';
 import { MatchCard } from '../components/tournament/MatchCard';
@@ -21,8 +20,8 @@ export function TournamentDetailPage() {
     {
       id: 'bracket',
       label: 'Bracket',
-      content: pairings ? (
-        <BracketView pairings={pairings} />
+      content: pairings && pairings.length > 0 ? (
+        <BracketView />
       ) : (
         <p className="text-gray-500">No bracket data available</p>
       ),
