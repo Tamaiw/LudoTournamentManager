@@ -1,24 +1,24 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../services/api';
-import { useAuth } from '../hooks/useAuth';
-import { TournamentCard } from '../components/tournament/TournamentCard';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '../services/api'
+import { useAuth } from '../hooks/useAuth'
+import { TournamentCard } from '../components/tournament/TournamentCard'
+import { Button } from '../components/ui/Button'
+import { Card } from '../components/ui/Card'
 
-type Filter = 'all' | 'live' | 'completed' | 'draft';
+type Filter = 'all' | 'live' | 'completed' | 'draft'
 
 export function TournamentListPage() {
-  const { user } = useAuth();
-  const [filter, setFilter] = useState<Filter>('all');
+  const { user } = useAuth()
+  const [filter, setFilter] = useState<Filter>('all')
 
   const { data: tournaments, isLoading } = useQuery({
     queryKey: ['tournaments'],
     queryFn: () => api.listTournaments(),
-  });
+  })
 
-  const filtered = tournaments?.filter(t => filter === 'all' ? true : t.status === filter) || [];
+  const filtered = tournaments?.filter((t) => (filter === 'all' ? true : t.status === filter)) || []
 
   return (
     <div className="flex flex-col gap-4">
@@ -32,7 +32,7 @@ export function TournamentListPage() {
       </div>
 
       <div className="flex gap-2">
-        {(['all', 'live', 'completed', 'draft'] as Filter[]).map(f => (
+        {(['all', 'live', 'completed', 'draft'] as Filter[]).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -51,9 +51,11 @@ export function TournamentListPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(t => <TournamentCard key={t.id} tournament={t} />)}
+          {filtered.map((t) => (
+            <TournamentCard key={t.id} tournament={t} />
+          ))}
         </div>
       )}
     </div>
-  );
+  )
 }

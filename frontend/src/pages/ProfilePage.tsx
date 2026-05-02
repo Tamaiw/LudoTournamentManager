@@ -1,12 +1,12 @@
-import { useAuth } from '../hooks/useAuth';
-import { Card } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
-import { Button } from '../components/ui/Button';
+import { useAuth } from '../hooks/useAuth'
+import { Card } from '../components/ui/Card'
+import { Badge } from '../components/ui/Badge'
+import { Button } from '../components/ui/Button'
 
 export function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuth()
 
-  if (!user) return <div>Not logged in</div>;
+  if (!user) return <div>Not logged in</div>
 
   return (
     <div className="max-w-lg flex flex-col gap-6">
@@ -27,7 +27,9 @@ export function ProfilePage() {
           </div>
         </div>
       </Card>
-      <Button variant="danger" onClick={logout}>Logout</Button>
+      <Button variant="danger" onClick={logout}>
+        Logout
+      </Button>
     </div>
-  );
+  )
 }

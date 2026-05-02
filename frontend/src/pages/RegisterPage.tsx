@@ -1,5 +1,5 @@
-import { Card } from '../components/ui/Card';
-import { RegisterForm } from '../components/auth/RegisterForm';
+import { Card } from '../components/ui/Card'
+import { RegisterForm } from '../components/auth/RegisterForm'
 
 export function RegisterPage() {
   return (
@@ -9,5 +9,5 @@ export function RegisterPage() {
         <RegisterForm />
       </Card>
     </div>
-  );
+  )
 }
