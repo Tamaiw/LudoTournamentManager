@@ -1,14 +1,14 @@
-import { User, Role } from '../../types';
-import { Button } from '../ui/Button';
-import { useUpdateUser, useDeleteUser } from '../../hooks/useUsers';
+import { User, Role } from '../../types'
+import { Button } from '../ui/Button'
+import { useUpdateUser, useDeleteUser } from '../../hooks/useUsers'
 
 interface UserTableProps {
-  users: User[];
+  users: User[]
 }
 
 export function UserTable({ users }: UserTableProps) {
-  const updateUser = useUpdateUser();
-  const deleteUser = useDeleteUser();
+  const updateUser = useUpdateUser()
+  const deleteUser = useDeleteUser()
 
   return (
     <div className="overflow-x-auto">
@@ -22,13 +22,13 @@ export function UserTable({ users }: UserTableProps) {
           </tr>
         </thead>
         <tbody>
-          {users.map(u => (
+          {users.map((u) => (
             <tr key={u.id} className="border-b last:border-0">
               <td className="py-2 pr-4">{u.email}</td>
               <td className="py-2 pr-4">
                 <select
                   value={u.role}
-                  onChange={e => updateUser.mutate({ id: u.id, role: e.target.value as Role })}
+                  onChange={(e) => updateUser.mutate({ id: u.id, role: e.target.value as Role })}
                   disabled={updateUser.isPending}
                   className="border rounded px-2 py-1 text-sm"
                 >
@@ -45,7 +45,7 @@ export function UserTable({ users }: UserTableProps) {
                   variant="danger"
                   onClick={() => {
                     if (confirm(`Delete user ${u.email}?`)) {
-                      deleteUser.mutate(u.id);
+                      deleteUser.mutate(u.id)
                     }
                   }}
                 >
@@ -57,5 +57,5 @@ export function UserTable({ users }: UserTableProps) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }

@@ -1,8 +1,8 @@
-import { GamePairing } from '../../types';
+import { GamePairing } from '../../types'
 
 interface Props {
-  round: number;
-  pairings: GamePairing[];
+  round: number
+  pairings: GamePairing[]
 }
 
 export function TableAssignment({ round, pairings }: Props) {
@@ -16,12 +16,17 @@ export function TableAssignment({ round, pairings }: Props) {
             <div className="text-sm space-y-1">
               {pairing.playerIds.map((playerId, idx) => (
                 <div key={playerId} className="flex items-center gap-2">
-                  <span className={`w-3 h-3 rounded-full ${
-                    pairing.seatColors[idx] === 'yellow' ? 'bg-yellow-400' :
-                    pairing.seatColors[idx] === 'green' ? 'bg-green-400' :
-                    pairing.seatColors[idx] === 'blue' ? 'bg-blue-400' :
-                    'bg-red-400'
-                  }`} />
+                  <span
+                    className={`w-3 h-3 rounded-full ${
+                      pairing.seatColors[idx] === 'yellow'
+                        ? 'bg-yellow-400'
+                        : pairing.seatColors[idx] === 'green'
+                          ? 'bg-green-400'
+                          : pairing.seatColors[idx] === 'blue'
+                            ? 'bg-blue-400'
+                            : 'bg-red-400'
+                    }`}
+                  />
                   <span>{playerId.slice(0, 8)}...</span>
                 </div>
               ))}
@@ -30,5 +35,5 @@ export function TableAssignment({ round, pairings }: Props) {
         ))}
       </div>
     </div>
-  );
+  )
 }

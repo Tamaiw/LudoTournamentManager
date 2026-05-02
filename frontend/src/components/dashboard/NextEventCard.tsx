@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
-import { Card } from '../ui/Card';
-import { Badge, BadgeVariant } from '../ui/Badge';
-import { Button } from '../ui/Button';
+import { Link } from 'react-router-dom'
+import { Card } from '../ui/Card'
+import { Badge, BadgeVariant } from '../ui/Badge'
+import { Button } from '../ui/Button'
 
 interface NextEventCardProps {
-  event: { id: string; name: string; type: 'tournament' | 'league'; status: string } | null;
+  event: { id: string; name: string; type: 'tournament' | 'league'; status: string } | null
 }
 
 export function NextEventCard({ event }: NextEventCardProps) {
@@ -22,7 +22,7 @@ export function NextEventCard({ event }: NextEventCardProps) {
           </Link>
         </div>
       </Card>
-    );
+    )
   }
 
   return (
@@ -36,5 +36,5 @@ export function NextEventCard({ event }: NextEventCardProps) {
         <Button>Enter</Button>
       </Link>
     </Card>
-  );
+  )
 }

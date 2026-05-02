@@ -1,12 +1,12 @@
-import { PlayerStanding } from '../../types';
+import { PlayerStanding } from '../../types'
 
 interface StandingsTableProps {
-  standings: PlayerStanding[];
+  standings: PlayerStanding[]
 }
 
 export function StandingsTable({ standings }: StandingsTableProps) {
   if (!standings || standings.length === 0) {
-    return <p className="text-gray-500">No standings available</p>;
+    return <p className="text-gray-500">No standings available</p>
   }
 
   return (
@@ -22,7 +22,7 @@ export function StandingsTable({ standings }: StandingsTableProps) {
           </tr>
         </thead>
         <tbody>
-          {standings.map(s => (
+          {standings.map((s) => (
             <tr key={s.playerId} className="border-b last:border-0">
               <td className="py-2 pr-4 font-medium">#{s.rank}</td>
               <td className="py-2 pr-4">{s.displayName}</td>
@@ -34,5 +34,5 @@ export function StandingsTable({ standings }: StandingsTableProps) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }

@@ -1,9 +1,9 @@
-import { useUsers } from '../hooks/useUsers';
-import { UserTable } from '../components/admin/UserTable';
-import { Card } from '../components/ui/Card';
+import { useUsers } from '../hooks/useUsers'
+import { UserTable } from '../components/admin/UserTable'
+import { Card } from '../components/ui/Card'
 
 export function AdminPage() {
-  const { data, isLoading } = useUsers();
+  const { data, isLoading } = useUsers()
 
   return (
     <div className="flex flex-col gap-6">
@@ -33,5 +33,5 @@ export function AdminPage() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

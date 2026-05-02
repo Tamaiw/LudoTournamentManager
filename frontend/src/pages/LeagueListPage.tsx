@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useLeagues } from '../hooks/useLeagues';
-import { useAuth } from '../hooks/useAuth';
-import { LeagueCard } from '../components/league/LeagueCard';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useLeagues } from '../hooks/useLeagues'
+import { useAuth } from '../hooks/useAuth'
+import { LeagueCard } from '../components/league/LeagueCard'
+import { Button } from '../components/ui/Button'
+import { Card } from '../components/ui/Card'
 
-type Filter = 'all' | 'live' | 'completed' | 'draft';
+type Filter = 'all' | 'live' | 'completed' | 'draft'
 
 export function LeagueListPage() {
-  const { user } = useAuth();
-  const [filter, setFilter] = useState<Filter>('all');
-  const { data: leagues, isLoading } = useLeagues();
+  const { user } = useAuth()
+  const [filter, setFilter] = useState<Filter>('all')
+  const { data: leagues, isLoading } = useLeagues()
 
-  const filtered = leagues?.filter(l => filter === 'all' ? true : l.status === filter) || [];
+  const filtered = leagues?.filter((l) => (filter === 'all' ? true : l.status === filter)) || []
 
   return (
     <div className="flex flex-col gap-4">
@@ -27,7 +27,7 @@ export function LeagueListPage() {
       </div>
 
       <div className="flex gap-2">
-        {(['all', 'live', 'completed', 'draft'] as Filter[]).map(f => (
+        {(['all', 'live', 'completed', 'draft'] as Filter[]).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -46,9 +46,11 @@ export function LeagueListPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(l => <LeagueCard key={l.id} league={l} />)}
+          {filtered.map((l) => (
+            <LeagueCard key={l.id} league={l} />
+          ))}
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -1,32 +1,38 @@
-import { useState, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../services/api';
-import { Card } from '../components/ui/Card';
-import { Input } from '../components/ui/Input';
-import { Button } from '../components/ui/Button';
+import { useState, FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '../services/api'
+import { Card } from '../components/ui/Card'
+import { Input } from '../components/ui/Input'
+import { Button } from '../components/ui/Button'
 
 export function CreateLeaguePage() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [name, setName] = useState('');
-  const [gamesPerPlayer, setGamesPerPlayer] = useState(3);
-  const [tablesCount, setTablesCount] = useState(10);
-  const [error, setError] = useState('');
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const [name, setName] = useState('')
+  const [gamesPerPlayer, setGamesPerPlayer] = useState(3)
+  const [tablesCount, setTablesCount] = useState(10)
+  const [error, setError] = useState('')
 
   const mutation = useMutation({
-    mutationFn: (data: { name: string; settings: { scoringRules: { placement: number; points: number }[]; gamesPerPlayer: number; tablesCount: number } }) =>
-      api.createLeague(data),
+    mutationFn: (data: {
+      name: string
+      settings: {
+        scoringRules: { placement: number; points: number }[]
+        gamesPerPlayer: number
+        tablesCount: number
+      }
+    }) => api.createLeague(data),
     onSuccess: (league) => {
-      queryClient.invalidateQueries({ queryKey: ['leagues'] });
-      navigate(`/leagues/${league.id}`);
+      queryClient.invalidateQueries({ queryKey: ['leagues'] })
+      navigate(`/leagues/${league.id}`)
     },
     onError: (err: any) => setError(err.message),
-  });
+  })
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
     mutation.mutate({
       name,
       settings: {
@@ -39,8 +45,8 @@ export function CreateLeaguePage() {
         gamesPerPlayer,
         tablesCount,
       },
-    });
-  };
+    })
+  }
 
   return (
     <div className="max-w-lg">
@@ -50,7 +56,7 @@ export function CreateLeaguePage() {
           <Input
             label="League Name"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             required
             placeholder="Spring League 2026"
           />
@@ -59,7 +65,7 @@ export function CreateLeaguePage() {
             type="number"
             min={1}
             value={gamesPerPlayer}
-            onChange={e => setGamesPerPlayer(Number(e.target.value))}
+            onChange={(e) => setGamesPerPlayer(Number(e.target.value))}
             required
           />
           <Input
@@ -67,7 +73,7 @@ export function CreateLeaguePage() {
             type="number"
             min={1}
             value={tablesCount}
-            onChange={e => setTablesCount(Number(e.target.value))}
+            onChange={(e) => setTablesCount(Number(e.target.value))}
             required
           />
           {error && <p className="text-red-600 text-sm">{error}</p>}
@@ -82,5 +88,5 @@ export function CreateLeaguePage() {
         </form>
       </Card>
     </div>
-  );
+  )
 }

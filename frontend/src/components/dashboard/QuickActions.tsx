@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
-import { Button } from '../ui/Button';
-import { Role } from '../../types';
+import { Link } from 'react-router-dom'
+import { Button } from '../ui/Button'
+import { Role } from '../../types'
 
 interface QuickActionsProps {
-  role: Role;
+  role: Role
 }
 
 export function QuickActions({ role }: QuickActionsProps) {
@@ -26,5 +26,5 @@ export function QuickActions({ role }: QuickActionsProps) {
         <Button variant="ghost">Browse Leagues</Button>
       </Link>
     </div>
-  );
+  )
 }

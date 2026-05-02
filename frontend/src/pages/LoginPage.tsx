@@ -1,5 +1,5 @@
-import { Card } from '../components/ui/Card';
-import { LoginForm } from '../components/auth/LoginForm';
+import { Card } from '../components/ui/Card'
+import { LoginForm } from '../components/auth/LoginForm'
 
 export function LoginPage() {
   return (
@@ -9,5 +9,5 @@ export function LoginPage() {
         <LoginForm />
       </Card>
     </div>
-  );
+  )
 }

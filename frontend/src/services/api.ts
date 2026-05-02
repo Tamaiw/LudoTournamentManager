@@ -1,43 +1,52 @@
-import { Role, User, League, PlayerStanding, Tournament, Match, GamePairing, MatchResult } from '../types';
+import {
+  Role,
+  User,
+  League,
+  PlayerStanding,
+  Tournament,
+  Match,
+  GamePairing,
+  MatchResult,
+} from '../types'
 
-const API_BASE = '';
+const API_BASE = ''
 
-const TOKEN_KEY = 'auth_token';
+const TOKEN_KEY = 'auth_token'
 
-let authToken: string | null = localStorage.getItem(TOKEN_KEY);
+let authToken: string | null = localStorage.getItem(TOKEN_KEY)
 
 export function setAuthToken(token: string | null) {
-  authToken = token;
+  authToken = token
   if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(TOKEN_KEY, token)
   } else {
-    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY)
   }
 }
 
 export function getAuthToken(): string | null {
-  return authToken;
+  return authToken
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const headers = new Headers(options?.headers);
-  headers.set('Content-Type', 'application/json');
+  const headers = new Headers(options?.headers)
+  headers.set('Content-Type', 'application/json')
 
   if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`);
+    headers.set('Authorization', `Bearer ${authToken}`)
   }
 
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
-  } as RequestInit);
+  } as RequestInit)
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.error?.message || 'Request failed');
+    const error = await res.json().catch(() => ({}))
+    throw new Error(error.error?.message || 'Request failed')
   }
 
-  return res.json();
+  return res.json()
 }
 
 export const api = {
@@ -82,8 +91,7 @@ export const api = {
   listUsers: () => request<{ users: User[] }>('/users'),
   updateUser: (id: string, data: { role: Role }) =>
     request<User>(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
-  deleteUser: (id: string) =>
-    request<void>(`/users/${id}`, { method: 'DELETE' }),
+  deleteUser: (id: string) => request<void>(`/users/${id}`, { method: 'DELETE' }),
   createLeague: (data: Partial<League>) =>
     request<League>('/leagues', { method: 'POST', body: JSON.stringify(data) }),
   generateLeaguePairings: (leagueId: string, playDate: string) =>
@@ -91,4 +99,4 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ play_date: playDate }),
     }),
-};
+}

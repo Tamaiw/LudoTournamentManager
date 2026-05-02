@@ -1,21 +1,21 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react'
 
 interface Tab {
-  id: string;
-  label: string;
-  content: ReactNode;
+  id: string
+  label: string
+  content: ReactNode
 }
 
 interface TabsProps {
-  tabs: Tab[];
+  tabs: Tab[]
 }
 
 export function Tabs({ tabs }: TabsProps) {
-  const [active, setActive] = useState(tabs[0].id);
+  const [active, setActive] = useState(tabs[0].id)
   return (
     <div>
       <div className="flex border-b gap-4">
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActive(tab.id)}
@@ -25,7 +25,7 @@ export function Tabs({ tabs }: TabsProps) {
           </button>
         ))}
       </div>
-      <div className="pt-4">{tabs.find(t => t.id === active)?.content}</div>
+      <div className="pt-4">{tabs.find((t) => t.id === active)?.content}</div>
     </div>
-  );
+  )
 }

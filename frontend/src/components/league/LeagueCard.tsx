@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
-import { Card } from '../ui/Card';
-import { Badge } from '../ui/Badge';
-import { League } from '../../types';
+import { Link } from 'react-router-dom'
+import { Card } from '../ui/Card'
+import { Badge } from '../ui/Badge'
+import { League } from '../../types'
 
 interface LeagueCardProps {
-  league: League;
+  league: League
 }
 
 export function LeagueCard({ league }: LeagueCardProps) {
@@ -22,5 +22,5 @@ export function LeagueCard({ league }: LeagueCardProps) {
         </div>
       </Card>
     </Link>
-  );
+  )
 }
