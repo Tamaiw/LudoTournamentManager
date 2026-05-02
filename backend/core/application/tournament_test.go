@@ -476,3 +476,209 @@ func TestReportMatch_ValidatesResultsCount(t *testing.T) {
 func strPtr(s string) *string {
 	return &s
 }
+
+// Additional tests for better coverage
+
+func TestCreateTournament_Success(t *testing.T) {
+	tournamentRepo := &mockTournamentRepository{tournaments: make(map[string]*models.Tournament)}
+	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	tournament, err := svc.CreateTournament(context.Background(), "New Tournament", "organizer-1", models.TournamentSettings{
+		TablesCount: 4,
+	})
+
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if tournament == nil {
+		t.Fatal("expected tournament, got nil")
+	}
+	if tournament.Name != "New Tournament" {
+		t.Errorf("expected name 'New Tournament', got %q", tournament.Name)
+	}
+	if tournament.Status != models.TournamentStatusDraft {
+		t.Errorf("expected status draft, got %v", tournament.Status)
+	}
+}
+
+func TestGetTournament_Success(t *testing.T) {
+	tournamentRepo := &mockTournamentRepository{
+		tournaments: map[string]*models.Tournament{
+			"tournament-1": {ID: "tournament-1", Name: "Test Tournament"},
+		},
+	}
+	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	tournament, err := svc.GetTournament(context.Background(), "tournament-1")
+
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if tournament.ID != "tournament-1" {
+		t.Errorf("expected ID 'tournament-1', got %q", tournament.ID)
+	}
+}
+
+func TestGetTournament_NotFound(t *testing.T) {
+	tournamentRepo := &mockTournamentRepository{tournaments: make(map[string]*models.Tournament)}
+	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	_, err := svc.GetTournament(context.Background(), "non-existent")
+
+	if err != domain.ErrNotFound {
+		t.Errorf("expected ErrNotFound, got %v", err)
+	}
+}
+
+func TestUpdateTournament_Success(t *testing.T) {
+	tournamentRepo := &mockTournamentRepository{
+		tournaments: map[string]*models.Tournament{
+			"tournament-1": {ID: "tournament-1", Status: models.TournamentStatusDraft},
+		},
+	}
+	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	err := svc.UpdateTournament(context.Background(), "tournament-1", models.TournamentSettings{
+		TablesCount: 8,
+	})
+
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+}
+
+func TestUpdateTournament_ActiveTournamentError(t *testing.T) {
+	tournamentRepo := &mockTournamentRepository{
+		tournaments: map[string]*models.Tournament{
+			"tournament-1": {ID: "tournament-1", Status: models.TournamentStatusLive},
+		},
+	}
+	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	err := svc.UpdateTournament(context.Background(), "tournament-1", models.TournamentSettings{})
+
+	if err != domain.ErrTournamentActive {
+		t.Errorf("expected ErrTournamentActive, got %v", err)
+	}
+}
+
+func TestDeleteTournament_Success(t *testing.T) {
+	tournamentRepo := &mockTournamentRepository{
+		tournaments: map[string]*models.Tournament{
+			"tournament-1": {ID: "tournament-1"},
+		},
+	}
+	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	err := svc.DeleteTournament(context.Background(), "tournament-1")
+
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if _, exists := tournamentRepo.tournaments["tournament-1"]; exists {
+		t.Error("expected tournament to be deleted")
+	}
+}
+
+func TestGetCurrentRoundPairings_Success(t *testing.T) {
+	tournamentID := "tournament-1"
+	tournamentRepo := &mockTournamentRepository{
+		tournaments: map[string]*models.Tournament{
+			tournamentID: {ID: tournamentID, Status: models.TournamentStatusLive},
+		},
+	}
+	matchRepo := &mockMatchRepository{
+		matches: map[string]*models.Match{
+			"match-1": {ID: "match-1", TournamentID: &tournamentID, Round: 1, TableNumber: 1, Status: models.MatchStatusPending},
+			"match-2": {ID: "match-2", TournamentID: &tournamentID, Round: 1, TableNumber: 2, Status: models.MatchStatusPending},
+			"match-3": {ID: "match-3", TournamentID: &tournamentID, Round: 1, TableNumber: 3, Status: models.MatchStatusCompleted},
+		},
+	}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	pairings, err := svc.GetCurrentRoundPairings(context.Background(), tournamentID)
+
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if len(pairings) != 2 {
+		t.Errorf("expected 2 pending pairings, got %d", len(pairings))
+	}
+}
+
+func TestGetCurrentRoundPairings_TournamentNotLive(t *testing.T) {
+	tournamentRepo := &mockTournamentRepository{
+		tournaments: map[string]*models.Tournament{
+			"tournament-1": {ID: "tournament-1", Status: models.TournamentStatusDraft},
+		},
+	}
+	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	_, err := svc.GetCurrentRoundPairings(context.Background(), "tournament-1")
+
+	if err != domain.ErrTournamentActive {
+		t.Errorf("expected ErrTournamentActive, got %v", err)
+	}
+}
+
+func TestReportMatch_MatchNotFound(t *testing.T) {
+	tournamentRepo := &mockTournamentRepository{tournaments: make(map[string]*models.Tournament)}
+	matchRepo := &mockMatchRepository{matches: make(map[string]*models.Match)}
+	svc := NewTournamentService(tournamentRepo, matchRepo, &mockMatchAssignmentRepository{})
+
+	results := []inbound.MatchResult{
+		{PlayerID: "p1", SeatColor: models.SeatYellow, Placement: 1},
+		{PlayerID: "p2", SeatColor: models.SeatGreen, Placement: 2},
+		{PlayerID: "p3", SeatColor: models.SeatBlue, Placement: 3},
+		{PlayerID: "p4", SeatColor: models.SeatRed, Placement: 4},
+	}
+
+	err := svc.ReportMatch(context.Background(), "non-existent", results, "reporter")
+
+	if err != domain.ErrNotFound {
+		t.Errorf("expected ErrNotFound, got %v", err)
+	}
+}
+
+func TestReportMatch_AlreadyPlayed(t *testing.T) {
+	now := time.Now()
+	tournamentRepo := &mockTournamentRepository{
+		tournaments: map[string]*models.Tournament{
+			"tournament-1": {ID: "tournament-1"},
+		},
+	}
+	matchRepo := &mockMatchRepository{
+		matches: map[string]*models.Match{
+			"match-1": {ID: "match-1", TournamentID: strPtr("tournament-1"), Status: models.MatchStatusCompleted, CompletedAt: &now},
+		},
+	}
+	assignmentRepo := &mockMatchAssignmentRepository{
+		assignments: map[string]*models.MatchAssignment{
+			"a1": {ID: "a1", MatchID: "match-1", PlayerID: "p1"},
+			"a2": {ID: "a2", MatchID: "match-1", PlayerID: "p2"},
+			"a3": {ID: "a3", MatchID: "match-1", PlayerID: "p3"},
+			"a4": {ID: "a4", MatchID: "match-1", PlayerID: "p4"},
+		},
+	}
+	svc := NewTournamentService(tournamentRepo, matchRepo, assignmentRepo)
+
+	results := []inbound.MatchResult{
+		{PlayerID: "p1", SeatColor: models.SeatYellow, Placement: 1},
+		{PlayerID: "p2", SeatColor: models.SeatGreen, Placement: 2},
+		{PlayerID: "p3", SeatColor: models.SeatBlue, Placement: 3},
+		{PlayerID: "p4", SeatColor: models.SeatRed, Placement: 4},
+	}
+
+	err := svc.ReportMatch(context.Background(), "match-1", results, "reporter")
+
+	if err != domain.ErrGameAlreadyPlayed {
+		t.Errorf("expected ErrGameAlreadyPlayed, got %v", err)
+	}
+}

@@ -1,0 +1,36 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - misspell
+    - predeclared
+    - exhaustive
+    - unparam
+
+linters-settings:
+  gofmt:
+    local-prefixes: ludo-tournament
+  goimports:
+    local-prefixes: ludo-tournament
+
+run:
+  go: "1.25"
+  tests: true
+  modules-download-mode: readonly
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+  exclude-rules:
+    - path: "_test\\.go$"
+      linters:
+        - unused
